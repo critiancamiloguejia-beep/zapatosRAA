@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #f97316;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Estilos base de la tienda */
+body {
+  font-family: var(--font-sans);
+  color: #111827;
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ocultar scrollbar en carruseles horizontales */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
