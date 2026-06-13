@@ -1,5 +1,5 @@
 -- ============================================================
--- TiendaNova — Esquema de base de datos Supabase
+-- RAA — Esquema de base de datos Supabase
 -- Ejecutar en el SQL Editor de Supabase
 -- ============================================================
 

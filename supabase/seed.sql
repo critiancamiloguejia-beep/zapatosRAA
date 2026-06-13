@@ -1,5 +1,5 @@
 -- ============================================================
--- TiendaNova — Datos iniciales
+-- RAA — Datos iniciales
 -- Ejecutar después de schema.sql en el SQL Editor de Supabase
 -- ============================================================
 

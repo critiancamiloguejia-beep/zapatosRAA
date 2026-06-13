@@ -35,7 +35,7 @@ export default function ProductCard({ producto }) {
   }
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
       {/* Imagen del producto con badge */}
       <Link to={`/productos/${producto.id}`} className="relative block">
         <div className="aspect-square overflow-hidden bg-gray-50 transition-all duration-200 group-hover:bg-gray-100">

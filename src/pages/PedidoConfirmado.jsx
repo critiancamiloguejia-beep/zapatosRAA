@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { formatearPrecio } from "../utils/formatters"
+import BrandLogo from "../components/BrandLogo"
 
 // Pantalla de confirmación después de completar el pedido
 export default function PedidoConfirmado() {
@@ -34,6 +35,9 @@ export default function PedidoConfirmado() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+        <div className="mb-6 flex justify-center">
+          <BrandLogo variant="principal" className="!h-14 !w-auto sm:!h-16" />
+        </div>
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
           <svg
             className="h-8 w-8 text-green-600"

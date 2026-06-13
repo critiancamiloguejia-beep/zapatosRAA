@@ -2,20 +2,11 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import CartIcon from "./CartIcon"
 import FavoritesIcon from "./FavoritesIcon"
+import BrandLogo from "./BrandLogo"
+import { MARCA, NOMBRE_TIENDA, CLASES_HEADER_MONOGRAMA, CLASES_HEADER_MONOGRAMA_MARCO, CLASES_HEADER_TEXTO } from "../utils/brand"
 
-export const NOMBRE_TIENDA = "TiendaNova"
-export const ALTURA_HEADER = "6.75rem"
-
-function BarraAnuncio() {
-  return (
-    <div className="bg-black px-4 py-2 text-center text-xs text-white sm:text-sm">
-      <p className="truncate sm:whitespace-normal">
-        🚚 Envío gratis a partir de $100.000 · Pagos seguros · Devolución en 30
-        días
-      </p>
-    </div>
-  )
-}
+export { NOMBRE_TIENDA }
+export const ALTURA_HEADER = "5rem"
 
 // Buscador del header: redirige a /productos con query param q
 function BuscadorHeader() {
@@ -83,18 +74,29 @@ export default function Header({ sentinelRef }) {
 
   return (
     <div className="fixed top-0 z-50 w-full">
-      <BarraAnuncio />
       <header
         className={`border-b border-gray-100 bg-white/95 backdrop-blur-sm transition-all duration-200 ${
           conSombra ? "shadow-md" : "shadow-none"
         }`}
       >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between pr-4 sm:pr-6 lg:pr-8">
           <Link
             to="/"
-            className="text-xl font-bold tracking-tight text-gray-900 transition-all duration-200 hover:text-[#F97316] sm:text-2xl"
+            className="-ml-8 flex shrink-0 items-center gap-0 sm:-ml-6 sm:gap-0.5 transition-opacity hover:opacity-80"
+            aria-label={`${MARCA.nombre} — ${MARCA.eslogan}`}
           >
-            {NOMBRE_TIENDA}
+            <span className={CLASES_HEADER_MONOGRAMA_MARCO} aria-hidden="true">
+              <BrandLogo
+                variant="monograma"
+                eager
+                className={CLASES_HEADER_MONOGRAMA}
+              />
+            </span>
+            <span
+              className={`font-brand font-bold leading-none tracking-wide text-gray-900 ${CLASES_HEADER_TEXTO}`}
+            >
+              {MARCA.nombre}
+            </span>
           </Link>
 
           <nav className="flex items-center gap-1 sm:gap-2">

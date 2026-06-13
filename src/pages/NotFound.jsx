@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom"
+import BrandLogo from "../components/BrandLogo"
 
 // Página 404 para rutas no encontradas
 export default function NotFound() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 lg:px-8">
+      <div className="mb-8 flex justify-center">
+        <BrandLogo variant="principal" className="!h-16 !w-auto sm:!h-20" />
+      </div>
       <p className="mb-2 text-6xl font-bold text-[#F97316]">404</p>
       <h1 className="mb-4 text-2xl font-bold text-gray-900 sm:text-3xl">
         Página no encontrada

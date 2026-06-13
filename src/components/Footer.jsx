@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
-import { NOMBRE_TIENDA } from "./Header"
+import BrandLogo from "./BrandLogo"
+import { MARCA, NOMBRE_TIENDA } from "../utils/brand"
 
 // Footer con 4 columnas
 export default function Footer() {
@@ -11,10 +12,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Columna 1: Marca */}
           <div>
-            <p className="mb-4 text-xl font-bold text-white">{NOMBRE_TIENDA}</p>
-            <p className="text-sm leading-relaxed text-gray-400">
-              Tu tienda de confianza para moda, calzado y accesorios. Calidad,
-              estilo y los mejores precios en un solo lugar.
+            <Link to="/" className="inline-block transition-opacity hover:opacity-90">
+              <BrandLogo
+                variant="principal"
+                invert
+                className="!h-20 !w-auto max-w-[180px] sm:!h-24"
+              />
+            </Link>
+            <p className="mt-4 text-sm leading-relaxed text-gray-400">
+              {MARCA.eslogan}. Moda, accesorios y tendencia con envío a todo
+              Colombia.
             </p>
           </div>
 
@@ -102,7 +109,7 @@ export default function Footer() {
               Contacto
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>📧 hola@tiendanova.com</li>
+              <li>📧 hola@raa.com</li>
               <li>📞 +57 300 123 4567</li>
               <li>📍 Bogotá, Colombia</li>
               <li className="pt-2">
