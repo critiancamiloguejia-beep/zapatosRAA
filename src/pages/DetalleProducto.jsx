@@ -165,10 +165,6 @@ export default function DetalleProducto() {
             </div>
           )}
 
-          <p className="mb-6 text-sm text-gray-600">
-            🔄 Devolución gratis en 30 días
-          </p>
-
           <div className="mb-6">
             <label
               htmlFor="cantidad"
