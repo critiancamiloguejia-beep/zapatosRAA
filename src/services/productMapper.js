@@ -1,16 +1,32 @@
-import { getImagenUrl } from "../utils/storageHelpers"
+import { getImagenUrl, esUrlImagenValida } from "../utils/storageHelpers"
+
+// Solo URLs no vacías (null, undefined, "", espacios)
+export { esUrlImagenValida }
+
+function normalizarUrls(urls) {
+  const vistas = new Set()
+  return urls
+    .map((url) => (typeof url === "string" ? url.trim() : ""))
+    .filter((url) => {
+      if (!esUrlImagenValida(url) || vistas.has(url)) return false
+      vistas.add(url)
+      return true
+    })
+}
 
 function resolverImagenes(fila) {
-  const filas = fila.producto_imagenes || []
+  const filas = (fila.producto_imagenes || []).filter(
+    (img) => img?.url && esUrlImagenValida(String(img.url))
+  )
   const ordenadas = [...filas].sort((a, b) => a.orden - b.orden)
-  const urls = ordenadas
-    .map((img) => getImagenUrl(img.url))
-    .filter(Boolean)
+  const urls = normalizarUrls(
+    ordenadas.map((img) => getImagenUrl(String(img.url).trim()))
+  )
 
   if (urls.length > 0) return urls
 
   const legacy = getImagenUrl(fila.imagen)
-  return legacy ? [legacy] : []
+  return legacy && esUrlImagenValida(legacy) ? [legacy] : []
 }
 
 // Mapea una fila de Supabase (snake_case) al modelo del frontend (camelCase)
@@ -37,9 +53,14 @@ export function mapearProducto(fila) {
 
 // Productos locales sin Supabase: sin galería, solo emoji
 export function mapearProductoLocal(producto) {
+  const imagen =
+    producto.imagen && esUrlImagenValida(producto.imagen)
+      ? producto.imagen.trim()
+      : null
+
   return {
     ...producto,
-    imagenes: [],
-    imagen: producto.imagen ?? null,
+    imagenes: imagen ? [imagen] : [],
+    imagen,
   }
 }
