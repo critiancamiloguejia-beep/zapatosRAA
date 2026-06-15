@@ -7,7 +7,7 @@ import {
 import { formatearPrecio } from "../utils/formatters"
 import { useCarrito } from "../context/CartContext"
 import ProductCard from "../components/ProductCard"
-import ProductImage from "../components/ProductImage"
+import ImageGallery from "../components/ImageGallery"
 import StarRating from "../components/StarRating"
 import BotonFavorito from "../components/BotonFavorito"
 
@@ -100,25 +100,25 @@ export default function DetalleProducto() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
-          <ProductImage
-            imagen={producto.imagen}
+        <div className="relative">
+          <ImageGallery
+            imagenes={producto.imagenes}
             emoji={producto.emoji}
             nombre={producto.nombre}
             className="text-9xl"
           />
           {agotado ? (
-            <span className="absolute left-4 top-4 rounded-full bg-gray-800 px-3 py-1 text-xs font-semibold text-white">
+            <span className="absolute left-4 top-4 z-10 rounded-full bg-gray-800 px-3 py-1 text-xs font-semibold text-white">
               Agotado
             </span>
           ) : (
             producto.badge && (
-              <span className="absolute left-4 top-4 rounded-full bg-[#F97316] px-3 py-1 text-xs font-semibold text-white">
+              <span className="absolute left-4 top-4 z-10 rounded-full bg-[#F97316] px-3 py-1 text-xs font-semibold text-white">
                 {producto.badge}
               </span>
             )
           )}
-          <div className="absolute right-4 top-4">
+          <div className="absolute right-4 top-4 z-10">
             <BotonFavorito productoId={producto.id} className="h-10 w-10" />
           </div>
         </div>

@@ -1,17 +1,20 @@
 import { supabase } from "../lib/supabaseClient"
-import { mapearProducto } from "./productMapper"
+import { mapearProducto, mapearProductoLocal } from "./productMapper"
 import { productos as productosLocal } from "../data/productos"
 
 const USAR_SUPABASE = import.meta.env.VITE_USAR_SUPABASE === "true"
 
+const SELECT_PRODUCTO =
+  "*, categorias(nombre), producto_imagenes(url, orden)"
+
 // --- FUNCIONES PÚBLICAS ---
 
 export async function obtenerTodosLosProductos() {
-  if (!USAR_SUPABASE) return productosLocal
+  if (!USAR_SUPABASE) return productosLocal.map(mapearProductoLocal)
 
   const { data, error } = await supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .eq("activo", true)
     .order("id")
 
@@ -20,12 +23,14 @@ export async function obtenerTodosLosProductos() {
 }
 
 export async function obtenerProductoPorId(id) {
-  if (!USAR_SUPABASE)
-    return productosLocal.find((p) => p.id === Number(id)) || null
+  if (!USAR_SUPABASE) {
+    const p = productosLocal.find((prod) => prod.id === Number(id))
+    return p ? mapearProductoLocal(p) : null
+  }
 
   const { data, error } = await supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .eq("id", id)
     .eq("activo", true)
     .single()
@@ -39,11 +44,12 @@ export async function obtenerProductosPorIds(ids) {
     return ids
       .map((id) => productosLocal.find((p) => p.id === Number(id)))
       .filter(Boolean)
+      .map(mapearProductoLocal)
   }
 
   const { data, error } = await supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .in("id", ids)
     .eq("activo", true)
 
@@ -58,11 +64,14 @@ export async function obtenerProductosPorIds(ids) {
 
 export async function obtenerProductosDestacados(limite = 6) {
   if (!USAR_SUPABASE)
-    return productosLocal.filter((p) => p.destacado).slice(0, limite)
+    return productosLocal
+      .filter((p) => p.destacado)
+      .slice(0, limite)
+      .map(mapearProductoLocal)
 
   const { data, error } = await supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .eq("activo", true)
     .eq("destacado", true)
     .limit(limite)
@@ -100,12 +109,12 @@ export async function obtenerProductosFiltrados({ categoria, q, orden } = {}) {
       resultado.sort((a, b) => a.precio - b.precio)
     if (orden === "precio_desc" || orden === "mayor")
       resultado.sort((a, b) => b.precio - a.precio)
-    return resultado
+    return resultado.map(mapearProductoLocal)
   }
 
   let query = supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .eq("activo", true)
 
   if (categoria) {
@@ -140,6 +149,7 @@ export async function obtenerProductosRelacionados(id, limite = 4) {
         (p) => p.categoria === producto.categoria && p.id !== Number(id)
       )
       .slice(0, limite)
+      .map(mapearProductoLocal)
   }
 
   const { data: cat } = await supabase
@@ -152,7 +162,7 @@ export async function obtenerProductosRelacionados(id, limite = 4) {
 
   const { data, error } = await supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .eq("activo", true)
     .eq("categoria_id", cat.id)
     .neq("id", id)
@@ -169,11 +179,12 @@ export async function obtenerProductosSugeridos(idsExcluir = [], limite = 3) {
       .filter((p) => !idsExcluir.includes(p.id))
       .sort((a, b) => ((a.id * semilla) % 7) - ((b.id * semilla) % 7))
       .slice(0, limite)
+      .map(mapearProductoLocal)
   }
 
   let query = supabase
     .from("productos")
-    .select("*, categorias(nombre)")
+    .select(SELECT_PRODUCTO)
     .eq("activo", true)
 
   if (idsExcluir.length > 0) {
