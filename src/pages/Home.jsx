@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Headphones,
   ChevronRight,
+  ChevronDown,
 } from "lucide-react"
 import {
   obtenerProductosDestacados,
@@ -92,27 +93,93 @@ const PASOS_COMPRA = [
   },
 ]
 
-const RESENAS = [
+const TESTIMONIOS = [
   {
-    nombre: "María González",
-    texto:
-      "Pedí unos audífonos y llegaron en 3 días. La calidad es increíble y pagué al recibir. ¡Súper recomendado!",
+    nombre: "María G.",
+    ciudad: "Bogotá",
     rating: 5,
-    inicial: "M",
+    texto:
+      "Las botas llegaron en perfectas condiciones y más rápido de lo esperado. El pago contraentrega me dio mucha confianza. ¡Volveré a comprar!",
+    producto: "Botas Brahma C",
+    inicial: "MG",
   },
   {
-    nombre: "Carlos Ramírez",
-    texto:
-      "Excelente servicio. Tuve una duda y el soporte me respondió enseguida. La cafetera funciona perfecto.",
+    nombre: "Carlos R.",
+    ciudad: "Medellín",
     rating: 5,
-    inicial: "C",
+    texto:
+      "Excelente calidad, la faja es justo lo que necesitaba. El envío fue rápido y el producto llegó bien empacado.",
+    producto: "Faja Cinturilla Reloj de Arena",
+    inicial: "CR",
   },
   {
-    nombre: "Laura Martínez",
+    nombre: "Valentina T.",
+    ciudad: "Cali",
+    rating: 5,
     texto:
-      "Me encantó poder pagar contraentrega. El reloj inteligente superó mis expectativas por el precio.",
+      "Me encantaron los tenis, son súper cómodos y bonitos. El proceso de compra fue muy fácil y el pago al recibir me pareció genial.",
+    producto: "Tenis Deportivos para Dama",
+    inicial: "VT",
+  },
+  {
+    nombre: "Andrés M.",
+    ciudad: "Barranquilla",
     rating: 4,
-    inicial: "L",
+    texto:
+      "El mouse ergonómico es perfecto para el trabajo. Ya no siento dolor en la muñeca. Lo recomiendo totalmente.",
+    producto: "Mouse Ergonómico Vertical M89",
+    inicial: "AM",
+  },
+  {
+    nombre: "Luisa F.",
+    ciudad: "Bucaramanga",
+    rating: 5,
+    texto:
+      "El buzo Nirvana es de muy buena tela, suave y con buen acabado. Llegó en 3 días hábiles. Muy satisfecha.",
+    producto: "Buzo Nirvana Estampado Unisex",
+    inicial: "LF",
+  },
+  {
+    nombre: "Jorge H.",
+    ciudad: "Pasto",
+    rating: 5,
+    texto:
+      "Primera vez comprando online con pago contraentrega y fue una experiencia muy buena. El producto llegó tal cual en las fotos.",
+    producto: "Conjunto Deportivo Largo",
+    inicial: "JH",
+  },
+]
+
+const FAQ = [
+  {
+    pregunta: "¿Cómo funciona el pago contraentrega?",
+    respuesta:
+      "Muy simple — haces tu pedido en nuestra tienda, y pagas en efectivo cuando el mensajero te entrega el producto en tu puerta. No necesitas tarjeta de crédito ni cuenta bancaria.",
+  },
+  {
+    pregunta: "¿Cuánto tarda el envío?",
+    respuesta:
+      "Generalmente entre 3 y 5 días hábiles en ciudades principales (Bogotá, Medellín, Cali, Barranquilla). En municipios o zonas más alejadas puede tomar entre 5 y 8 días hábiles.",
+  },
+  {
+    pregunta: "¿A qué ciudades hacen envíos?",
+    respuesta:
+      "Hacemos envíos a toda Colombia, incluyendo municipios y zonas apartadas.",
+  },
+  {
+    pregunta: "¿Qué pasa si el producto llega dañado o incompleto?",
+    respuesta:
+      "Debes revisar el producto al recibirlo. Si tiene algún defecto de fábrica o llegó incompleto, notifícanos dentro de las 24 horas siguientes por WhatsApp y gestionamos la garantía contigo.",
+  },
+  {
+    pregunta: "¿Puedo elegir talla y color antes de que me lo envíen?",
+    respuesta:
+      "Sí, para productos con tallas o colores disponibles, escríbenos por WhatsApp antes o después de hacer tu pedido y coordinamos la variante que necesitas.",
+  },
+  {
+    pregunta: "¿Es seguro comprar en RAA?",
+    respuesta:
+      "Sí. Con el pago contraentrega nunca pagas por adelantado — solo pagas cuando tienes el producto en tus manos. Además trabajamos con proveedores verificados y transportadoras reconocidas a nivel nacional.",
   },
 ]
 
@@ -205,6 +272,105 @@ function HeroCarrusel() {
             }`}
           />
         ))}
+      </div>
+    </section>
+  )
+}
+
+function Estrellas({ rating }) {
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={`h-4 w-4 ${
+            i < rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  )
+}
+
+function SeccionTestimonios() {
+  return (
+    <section className="bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
+        <h2 className="text-center text-2xl font-bold md:text-3xl">
+          Lo que dicen nuestros clientes
+        </h2>
+        <div className="-mx-4 mt-8 flex gap-4 overflow-x-auto px-4 pb-2 snap-x md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible lg:grid-cols-3">
+          {TESTIMONIOS.map((t) => (
+            <article
+              key={`${t.nombre}-${t.ciudad}`}
+              className="flex min-w-[280px] snap-start flex-col rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm md:min-w-0"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F97316] text-sm font-bold text-white">
+                  {t.inicial}
+                </span>
+                <p className="text-sm font-semibold text-gray-900">
+                  {t.nombre} — {t.ciudad}
+                </p>
+              </div>
+              <div className="mt-3">
+                <Estrellas rating={t.rating} />
+              </div>
+              <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-gray-700">
+                “{t.texto}”
+              </blockquote>
+              <p className="mt-4 text-xs text-gray-500">— {t.producto}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function SeccionFaq() {
+  const [abierta, setAbierta] = useState(null)
+
+  return (
+    <section className="bg-[#F9FAFB]">
+      <div className="mx-auto max-w-3xl px-4 py-12 md:py-16">
+        <h2 className="text-center text-2xl font-bold md:text-3xl">
+          Preguntas frecuentes
+        </h2>
+        <div className="mt-8 space-y-3">
+          {FAQ.map((item, i) => {
+            const expandida = abierta === i
+            return (
+              <div
+                key={item.pregunta}
+                className="overflow-hidden rounded-xl border border-gray-200 bg-white"
+              >
+                <button
+                  type="button"
+                  onClick={() => setAbierta(expandida ? null : i)}
+                  aria-expanded={expandida}
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                >
+                  <span className="text-sm font-semibold text-gray-900 sm:text-base">
+                    {item.pregunta}
+                  </span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-[#F97316] transition-transform duration-200 ${
+                      expandida ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {expandida && (
+                  <div className="border-t border-gray-100 px-5 pb-4 pt-2">
+                    <p className="text-sm leading-relaxed text-gray-600">
+                      {item.respuesta}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
@@ -409,6 +575,9 @@ export default function Home() {
         </div>
       </section>
 
+      <SeccionTestimonios />
+      <SeccionFaq />
+
       {/* Banner categoría destacada */}
       <section className="mx-auto max-w-7xl px-4 py-8">
         <div className="relative h-[250px] overflow-hidden rounded-3xl">
@@ -454,45 +623,6 @@ export default function Home() {
                 <h3 className="mt-5 text-lg font-bold">{titulo}</h3>
                 <p className="mt-2 text-sm text-gray-500">{desc}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Reseñas */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
-          <h2 className="text-center text-2xl font-bold md:text-3xl">
-            Lo que dicen nuestros clientes
-          </h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {RESENAS.map((r) => (
-              <figure
-                key={r.nombre}
-                className="rounded-2xl border-l-4 border-orange-500 bg-gray-50 p-6 shadow-sm"
-              >
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < r.rating
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <blockquote className="mt-3 text-sm text-gray-700">
-                  “{r.texto}”
-                </blockquote>
-                <figcaption className="mt-4 flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white">
-                    {r.inicial}
-                  </span>
-                  <span className="text-sm font-semibold">{r.nombre}</span>
-                </figcaption>
-              </figure>
             ))}
           </div>
         </div>
