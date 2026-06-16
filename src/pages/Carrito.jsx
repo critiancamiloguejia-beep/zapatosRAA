@@ -3,42 +3,10 @@ import { Link } from "react-router-dom"
 import { useCarrito } from "../context/CartContext"
 import { formatearPrecio } from "../utils/formatters"
 import { obtenerProductosSugeridos } from "../services/productService"
-import { ENVIO_GRATIS_MINIMO } from "../utils/constants"
 import { calcularTotales } from "../utils/calcularTotales"
 import ProductCard from "../components/ProductCard"
 import ProductImage from "../components/ProductImage"
 import { getImagenUrl } from "../utils/storageHelpers"
-
-// Barra de progreso hacia envío gratis
-function BarraEnvioGratis({ subtotal }) {
-  const progreso = Math.min((subtotal / ENVIO_GRATIS_MINIMO) * 100, 100)
-  const faltante = Math.max(ENVIO_GRATIS_MINIMO - subtotal, 0)
-  const envioGratis = subtotal >= ENVIO_GRATIS_MINIMO
-
-  return (
-    <div className="mb-6 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-      {envioGratis ? (
-        <p className="text-sm font-semibold text-emerald-600">
-          🎉 ¡Felicitaciones! Tienes envío gratis
-        </p>
-      ) : (
-        <p className="mb-2 text-sm text-gray-700">
-          Te faltan{" "}
-          <span className="font-semibold text-[#F97316]">
-            {formatearPrecio(faltante)}
-          </span>{" "}
-          para envío gratis
-        </p>
-      )}
-      <div className="h-2.5 overflow-hidden rounded-full bg-gray-100">
-        <div
-          className="h-full rounded-full bg-[#F97316] transition-all duration-500"
-          style={{ width: `${progreso}%` }}
-        />
-      </div>
-    </div>
-  )
-}
 
 // Página del carrito de compras
 export default function Carrito() {
@@ -105,8 +73,6 @@ export default function Carrito() {
           Vaciar carrito
         </button>
       </div>
-
-      <BarraEnvioGratis subtotal={totales.subtotal} />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
