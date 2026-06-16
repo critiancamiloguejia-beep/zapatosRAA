@@ -6,6 +6,8 @@ import { obtenerProductosSugeridos } from "../services/productService"
 import { ENVIO_GRATIS_MINIMO } from "../utils/constants"
 import { calcularTotales } from "../utils/calcularTotales"
 import ProductCard from "../components/ProductCard"
+import ProductImage from "../components/ProductImage"
+import { getImagenUrl } from "../utils/storageHelpers"
 
 // Barra de progreso hacia envío gratis
 function BarraEnvioGratis({ subtotal }) {
@@ -114,8 +116,13 @@ export default function Carrito() {
                 key={item.id}
                 className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
               >
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-gray-50 text-4xl">
-                  {item.emoji}
+                <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-50">
+                  <ProductImage
+                    imagen={getImagenUrl(item.imagen) || item.imagen}
+                    emoji={item.emoji}
+                    nombre={item.nombre}
+                    className="text-3xl"
+                  />
                 </div>
 
                 <div className="flex-1">
