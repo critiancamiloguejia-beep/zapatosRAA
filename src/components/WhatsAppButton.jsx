@@ -1,10 +1,11 @@
-// Botón flotante de WhatsApp visible en toda la tienda
-const WHATSAPP_NUMBER = "573197897130"
+import { urlWhatsApp } from "../utils/whatsapp"
+
 const WHATSAPP_MESSAGE =
   "¡Hola! Vi sus productos en Zapatos RAA y tengo una pregunta 😊"
 
+// Botón flotante de WhatsApp visible en toda la tienda
 export default function WhatsAppButton() {
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`
+  const url = urlWhatsApp(WHATSAPP_MESSAGE)
 
   return (
     <a
