@@ -28,6 +28,18 @@ function imagenesDesdeDb(fila) {
   )
 }
 
+function normalizarTallas(tallas) {
+  if (!Array.isArray(tallas)) return []
+  return tallas
+    .map((t) => Number(t))
+    .filter((t) => !Number.isNaN(t) && t > 0)
+}
+
+function normalizarColores(colores) {
+  if (!Array.isArray(colores)) return []
+  return colores.map((c) => String(c).trim()).filter(Boolean)
+}
+
 // Galería completa: imagen principal + array imagenes (máx. 8)
 export function construirGaleria(producto) {
   const lista = []
@@ -60,8 +72,8 @@ export function mapearProducto(fila) {
     calificacion: fila.calificacion || 0,
     reseñas: fila.resenas || 0,
     stock: fila.stock ?? 0,
-    tallas: fila.tallas || null,
-    colores: fila.colores || null,
+    tallas: normalizarTallas(fila.tallas),
+    colores: normalizarColores(fila.colores),
     marca: fila.marca || null,
     genero: fila.genero || null,
   }
@@ -85,5 +97,7 @@ export function mapearProductoLocal(producto) {
     ...producto,
     imagen,
     imagenes,
+    tallas: normalizarTallas(producto.tallas),
+    colores: normalizarColores(producto.colores),
   }
 }

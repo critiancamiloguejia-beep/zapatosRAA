@@ -11,7 +11,7 @@ import ProductCard from "../components/ProductCard"
 import ImageGallery from "../components/ImageGallery"
 import StarRating from "../components/StarRating"
 import BotonFavorito from "../components/BotonFavorito"
-import { TALLAS, COLORES } from "../utils/constants"
+import { colorAHex } from "../utils/colorHelpers"
 
 // Página de detalle de un producto individual
 export default function DetalleProducto() {
@@ -19,8 +19,8 @@ export default function DetalleProducto() {
   const navigate = useNavigate()
   const { agregarAlCarrito } = useCarrito()
   const [cantidad, setCantidad] = useState(1)
-  const [talla, setTalla] = useState(TALLAS[0])
-  const [color, setColor] = useState(COLORES[0].nombre)
+  const [talla, setTalla] = useState(null)
+  const [color, setColor] = useState(null)
   const [producto, setProducto] = useState(null)
   const [relacionados, setRelacionados] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -35,8 +35,8 @@ export default function DetalleProducto() {
     setCargando(true)
     setError(null)
     setCantidad(1)
-    setTalla(TALLAS[0])
-    setColor(COLORES[0].nombre)
+    setTalla(null)
+    setColor(null)
 
     obtenerProductoPorId(id)
       .then((data) => {
@@ -45,6 +45,8 @@ export default function DetalleProducto() {
           return null
         }
         setProducto(data)
+        setTalla(data.tallas?.[0] ?? null)
+        setColor(data.colores?.[0] ?? null)
         return obtenerProductosRelacionados(id, 4)
       })
       .then((rel) => {
@@ -58,7 +60,11 @@ export default function DetalleProducto() {
   }, [id, navigate, reintentar])
 
   const productoConVariantes = producto
-    ? { ...producto, talla, color }
+    ? {
+        ...producto,
+        ...(talla != null && { talla }),
+        ...(color && { color }),
+      }
     : null
 
   const manejarAgregar = () => {
@@ -106,6 +112,9 @@ export default function DetalleProducto() {
   }
 
   if (!producto) return null
+
+  const tallasDisponibles = producto.tallas ?? []
+  const coloresDisponibles = producto.colores ?? []
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -179,48 +188,83 @@ export default function DetalleProducto() {
             <p className="mb-2 block text-sm font-medium text-gray-700">
               Talla
             </p>
-            <div className="flex flex-wrap gap-2">
-              {TALLAS.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setTalla(t)}
-                  disabled={agotado}
-                  className={`flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
-                    talla === t
-                      ? "border-[#F97316] bg-orange-50 text-[#F97316]"
-                      : "border-gray-200 text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+            {tallasDisponibles.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {tallasDisponibles.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTalla(t)}
+                    disabled={agotado}
+                    className={`flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+                      talla === t
+                        ? "border-[#F97316] bg-orange-50 text-[#F97316]"
+                        : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">Sin tallas disponibles</p>
+            )}
           </div>
 
           <div className="mb-6">
             <p className="mb-2 block text-sm font-medium text-gray-700">
               Color
             </p>
-            <div className="flex flex-wrap gap-3">
-              {COLORES.map((c) => (
-                <button
-                  key={c.nombre}
-                  type="button"
-                  onClick={() => setColor(c.nombre)}
-                  disabled={agotado}
-                  title={c.nombre}
-                  aria-label={`Color ${c.nombre}`}
-                  className={`h-9 w-9 rounded-full border-2 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
-                    color === c.nombre
-                      ? "border-[#F97316] ring-2 ring-orange-200"
-                      : "border-gray-200 hover:scale-105"
-                  }`}
-                  style={{ backgroundColor: c.hex }}
-                />
-              ))}
-            </div>
-            <p className="mt-2 text-sm text-gray-500">{color}</p>
+            {coloresDisponibles.length > 0 ? (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  {coloresDisponibles.map((nombreColor) => {
+                    const hex = colorAHex(nombreColor)
+                    const seleccionado = color === nombreColor
+
+                    if (hex) {
+                      return (
+                        <button
+                          key={nombreColor}
+                          type="button"
+                          onClick={() => setColor(nombreColor)}
+                          disabled={agotado}
+                          title={nombreColor}
+                          aria-label={`Color ${nombreColor}`}
+                          className={`h-9 w-9 rounded-full border-2 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+                            seleccionado
+                              ? "border-[#F97316] ring-2 ring-orange-200"
+                              : "border-gray-200 hover:scale-105"
+                          }`}
+                          style={{ backgroundColor: hex }}
+                        />
+                      )
+                    }
+
+                    return (
+                      <button
+                        key={nombreColor}
+                        type="button"
+                        onClick={() => setColor(nombreColor)}
+                        disabled={agotado}
+                        className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+                          seleccionado
+                            ? "border-[#F97316] bg-orange-50 text-[#F97316]"
+                            : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {nombreColor}
+                      </button>
+                    )
+                  })}
+                </div>
+                {color && (
+                  <p className="mt-2 text-sm text-gray-500">{color}</p>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-gray-500">Sin colores disponibles</p>
+            )}
           </div>
 
           <div className="mb-6">
