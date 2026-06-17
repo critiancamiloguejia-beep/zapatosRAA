@@ -20,8 +20,8 @@ export default function Footer() {
               />
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-gray-400">
-              {MARCA.eslogan}. Moda, accesorios y tendencia con envío a todo
-              Colombia.
+              {MARCA.eslogan}. Calzado de calidad para cada ocasión, con envío
+              a todo Colombia.
             </p>
           </div>
 

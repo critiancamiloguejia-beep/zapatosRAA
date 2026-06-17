@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 
 // Clave para persistir el carrito en localStorage
-const STORAGE_KEY = "tiendanova-carrito"
+const STORAGE_KEY = "zapatosraa-carrito"
 
 // Acciones del reducer del carrito
 const ACCIONES = {
@@ -30,6 +30,11 @@ function cargarCarrito() {
   return estadoInicial
 }
 
+// Clave única por producto + talla + color en el carrito
+function claveCarrito(item) {
+  return `${item.id}|${item.talla ?? ""}|${item.color ?? ""}`
+}
+
 // Reducer que maneja todas las operaciones del carrito
 function carritoReducer(estado, accion) {
   switch (accion.type) {
@@ -38,12 +43,13 @@ function carritoReducer(estado, accion) {
 
     case ACCIONES.AGREGAR: {
       const { producto, cantidad = 1 } = accion.payload
-      const existente = estado.items.find((item) => item.id === producto.id)
+      const clave = claveCarrito(producto)
+      const existente = estado.items.find((item) => claveCarrito(item) === clave)
 
       if (existente) {
         return {
           items: estado.items.map((item) =>
-            item.id === producto.id
+            claveCarrito(item) === clave
               ? { ...item, cantidad: item.cantidad + cantidad }
               : item
           ),
@@ -56,11 +62,11 @@ function carritoReducer(estado, accion) {
     }
 
     case ACCIONES.QUITAR: {
-      const { id } = accion.payload
+      const { clave } = accion.payload
       return {
         items: estado.items
           .map((item) =>
-            item.id === id
+            claveCarrito(item) === clave
               ? { ...item, cantidad: item.cantidad - 1 }
               : item
           )
@@ -69,9 +75,9 @@ function carritoReducer(estado, accion) {
     }
 
     case ACCIONES.ELIMINAR: {
-      const { id } = accion.payload
+      const { clave } = accion.payload
       return {
-        items: estado.items.filter((item) => item.id !== id),
+        items: estado.items.filter((item) => claveCarrito(item) !== clave),
       }
     }
 
@@ -105,13 +111,13 @@ export function CartProvider({ children }) {
   }
 
   // Reducir cantidad de un producto
-  const quitarDelCarrito = (id) => {
-    dispatch({ type: ACCIONES.QUITAR, payload: { id } })
+  const quitarDelCarrito = (item) => {
+    dispatch({ type: ACCIONES.QUITAR, payload: { clave: claveCarrito(item) } })
   }
 
   // Eliminar producto completamente del carrito
-  const eliminarDelCarrito = (id) => {
-    dispatch({ type: ACCIONES.ELIMINAR, payload: { id } })
+  const eliminarDelCarrito = (item) => {
+    dispatch({ type: ACCIONES.ELIMINAR, payload: { clave: claveCarrito(item) } })
   }
 
   // Vaciar todo el carrito

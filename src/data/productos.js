@@ -1,4 +1,15 @@
 // Catálogo de productos de ejemplo para la tienda
+export const categorias = [
+  "Zapatos Deportivos",
+  "Zapatos Casuales",
+  "Zapatos Formales",
+  "Botas",
+  "Sandalias",
+  "Zapatos de Vestir",
+  "Zapatos para Correr",
+  "Zapatos de Moda",
+]
+
 export const productos = [
   {
     id: 1,
@@ -158,48 +169,14 @@ export const productos = [
   },
 ]
 
-// Obtener categorías únicas del catálogo
-export const categorias = [...new Set(productos.map((p) => p.categoria))]
-
-// Formatear precio en pesos colombianos: $35.000
-export function formatearPrecio(precio) {
-  return `$${precio.toLocaleString("es-CO")}`
-}
-
-// Obtener productos relacionados por categoría (excluye el actual)
-export function obtenerProductosRelacionados(productoId, limite = 4) {
-  const producto = productos.find((p) => p.id === productoId)
-  if (!producto) return []
-
-  const mismaCategoria = productos.filter(
-    (p) => p.categoria === producto.categoria && p.id !== productoId
-  )
-  const otros = productos.filter(
-    (p) => p.categoria !== producto.categoria && p.id !== productoId
-  )
-
-  return [...mismaCategoria, ...otros].slice(0, limite)
-}
-
-// Obtener sugerencias aleatorias para el carrito (excluye productos ya agregados)
-export function obtenerProductosSugeridos(idsEnCarrito, limite = 3) {
-  const ids = new Set(idsEnCarrito)
-  const disponibles = productos.filter((p) => !ids.has(p.id))
-  const semilla = idsEnCarrito.reduce((acc, id) => acc + id, 0) || 1
-
-  return [...disponibles]
-    .sort((a, b) => ((a.id * semilla) % 7) - ((b.id * semilla) % 7))
-    .slice(0, limite)
-}
-
-// Stock ficticio estable según el ID del producto (entre 2 y 8)
-export function obtenerStock(productoId) {
-  return ((productoId * 7 + 3) % 7) + 2
-}
-
 // Emojis representativos por categoría
 export const emojiCategoria = {
-  Ropa: "👕",
-  Calzado: "👟",
-  Accesorios: "🎒",
+  "Zapatos Deportivos": "👟",
+  "Zapatos Casuales": "👞",
+  "Zapatos Formales": "👔",
+  Botas: "🥾",
+  Sandalias: "🩴",
+  "Zapatos de Vestir": "👠",
+  "Zapatos para Correr": "🏃",
+  "Zapatos de Moda": "✨",
 }

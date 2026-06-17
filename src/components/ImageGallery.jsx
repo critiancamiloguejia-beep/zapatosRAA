@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { esUrlImagenValida } from "../utils/storageHelpers"
+import { MAX_IMAGENES_PRODUCTO } from "../utils/constants"
 
 function normalizarLista(imagenes) {
   const vistas = new Set()
@@ -10,9 +12,10 @@ function normalizarLista(imagenes) {
       vistas.add(url)
       return true
     })
+    .slice(0, MAX_IMAGENES_PRODUCTO)
 }
 
-// Galería de imágenes con miniaturas; fallback a emoji si no hay fotos
+// Galería con imagen principal, miniaturas y flechas anterior/siguiente
 export default function ImageGallery({
   imagenes = [],
   emoji,
@@ -35,10 +38,19 @@ export default function ImageGallery({
 
   const indiceSeguro = Math.min(indice, Math.max(0, visibles.length - 1))
   const urlActual = visibles[indiceSeguro]
+  const unaSola = visibles.length <= 1
 
   const marcarFallida = (url) => {
     setFallidas((prev) => new Set(prev).add(url))
     setIndice(0)
+  }
+
+  const irAnterior = () => {
+    setIndice((i) => (i - 1 + visibles.length) % visibles.length)
+  }
+
+  const irSiguiente = () => {
+    setIndice((i) => (i + 1) % visibles.length)
   }
 
   if (visibles.length === 0 || !urlActual) {
@@ -53,11 +65,9 @@ export default function ImageGallery({
     )
   }
 
-  const unaSola = visibles.length === 1
-
   return (
     <div className="w-full">
-      <div className="aspect-square overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+      <div className="relative aspect-square overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
         <img
           key={urlActual}
           src={urlActual}
@@ -66,10 +76,34 @@ export default function ImageGallery({
           onError={() => marcarFallida(urlActual)}
           loading={indiceSeguro === 0 ? "eager" : "lazy"}
         />
+
+        {!unaSola && (
+          <>
+            <button
+              type="button"
+              onClick={irAnterior}
+              aria-label="Imagen anterior"
+              className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-800 shadow-md transition hover:bg-white"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button
+              type="button"
+              onClick={irSiguiente}
+              aria-label="Imagen siguiente"
+              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-800 shadow-md transition hover:bg-white"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+            <span className="absolute bottom-3 right-3 rounded-full bg-black/50 px-2.5 py-1 text-xs font-medium text-white">
+              {indiceSeguro + 1} / {visibles.length}
+            </span>
+          </>
+        )}
       </div>
 
       {!unaSola && (
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
           {visibles.map((url, i) => (
             <button
               key={url}
@@ -77,7 +111,7 @@ export default function ImageGallery({
               onClick={() => setIndice(i)}
               aria-label={`Ver imagen ${i + 1} de ${nombre}`}
               aria-current={indiceSeguro === i ? "true" : undefined}
-              className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition ${
+              className={`aspect-square overflow-hidden rounded-lg border-2 transition ${
                 indiceSeguro === i
                   ? "border-[#F97316] ring-2 ring-orange-200"
                   : "border-gray-200 opacity-70 hover:opacity-100"

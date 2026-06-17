@@ -1,4 +1,5 @@
 import { getImagenUrl, esUrlImagenValida } from "../utils/storageHelpers"
+import { MAX_IMAGENES_PRODUCTO } from "../utils/constants"
 
 // Solo URLs no vacías (null, undefined, "", espacios)
 export { esUrlImagenValida }
@@ -14,53 +15,75 @@ function normalizarUrls(urls) {
     })
 }
 
-function resolverImagenes(fila) {
-  const filas = (fila.producto_imagenes || []).filter(
-    (img) => img?.url && esUrlImagenValida(String(img.url))
-  )
-  const ordenadas = [...filas].sort((a, b) => a.orden - b.orden)
-  const urls = normalizarUrls(
-    ordenadas.map((img) => getImagenUrl(String(img.url).trim()))
-  )
-
-  if (urls.length > 0) return urls
-
-  const legacy = getImagenUrl(fila.imagen)
-  return legacy && esUrlImagenValida(legacy) ? [legacy] : []
+function imagenPrincipalDesdeFila(fila) {
+  const url = getImagenUrl(fila.imagen)
+  return url && esUrlImagenValida(url) ? url : null
 }
 
-// Mapea una fila de Supabase (snake_case) al modelo del frontend (camelCase)
+function imagenesDesdeDb(fila) {
+  if (!Array.isArray(fila.imagenes)) return []
+
+  return normalizarUrls(
+    fila.imagenes.map((url) => getImagenUrl(String(url).trim()))
+  )
+}
+
+// Galería completa: imagen principal + array imagenes (máx. 8)
+export function construirGaleria(producto) {
+  const lista = []
+  if (producto?.imagen) lista.push(producto.imagen)
+
+  for (const url of producto?.imagenes || []) {
+    if (url && !lista.includes(url)) lista.push(url)
+  }
+
+  return lista.slice(0, MAX_IMAGENES_PRODUCTO)
+}
+
+// Mapea una fila de Supabase al modelo del frontend (camelCase)
 export function mapearProducto(fila) {
-  const imagenes = resolverImagenes(fila)
+  const imagen = imagenPrincipalDesdeFila(fila)
+  const imagenes = imagenesDesdeDb(fila)
 
   return {
     id: fila.id,
     nombre: fila.nombre,
-    categoria: fila.categorias?.nombre || fila.categoria || "",
+    categoria: fila.categoria || "",
     precio: fila.precio,
     precioAnterior: fila.precio_anterior || null,
     descripcion: fila.descripcion || "",
-    emoji: fila.emoji || "📦",
+    emoji: fila.emoji || "👟",
+    imagen,
     imagenes,
-    imagen: imagenes[0] || null,
-    destacado: fila.destacado,
+    destacado: fila.destacado ?? true,
     badge: fila.badge || null,
     calificacion: fila.calificacion || 0,
     reseñas: fila.resenas || 0,
-    stock: fila.stock || 0,
+    stock: fila.stock ?? 0,
+    tallas: fila.tallas || null,
+    colores: fila.colores || null,
+    marca: fila.marca || null,
+    genero: fila.genero || null,
   }
 }
 
-// Productos locales sin Supabase: sin galería, solo emoji
+// Productos locales sin Supabase
 export function mapearProductoLocal(producto) {
   const imagen =
     producto.imagen && esUrlImagenValida(producto.imagen)
       ? producto.imagen.trim()
       : null
 
+  const imagenes = Array.isArray(producto.imagenes)
+    ? producto.imagenes
+        .map((url) => (typeof url === "string" ? url.trim() : ""))
+        .filter((url) => esUrlImagenValida(url))
+        .slice(0, MAX_IMAGENES_PRODUCTO)
+    : []
+
   return {
     ...producto,
-    imagenes: imagen ? [imagen] : [],
     imagen,
+    imagenes,
   }
 }

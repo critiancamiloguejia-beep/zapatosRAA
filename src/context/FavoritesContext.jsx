@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer, useEffect } from "react"
 
-const STORAGE_KEY = "tiendanova-favoritos"
+const STORAGE_KEY = "zapatosraa-favoritos"
 
 const ACCIONES = {
   AGREGAR: "AGREGAR",

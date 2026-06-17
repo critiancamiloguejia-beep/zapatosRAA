@@ -1,7 +1,7 @@
-// Identidad visual y constantes de marca RAA
+// Identidad visual y constantes de marca Zapatos RAA
 export const MARCA = {
-  nombre: "RAA",
-  eslogan: "Tu estilo, a tu puerta",
+  nombre: "Zapatos RAA",
+  eslogan: "Calidad, comodidad y estilo en cada paso",
   logos: {
     principal: "/images/logo-principal.png",
     horizontal: "/images/logo-horizontal.png",

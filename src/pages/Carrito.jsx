@@ -79,7 +79,7 @@ export default function Carrito() {
           <div className="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white shadow-sm">
             {items.map((item) => (
               <div
-                key={item.id}
+                key={`${item.id}-${item.talla ?? ""}-${item.color ?? ""}`}
                 className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
               >
                 <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-50">
@@ -99,6 +99,13 @@ export default function Carrito() {
                     {item.nombre}
                   </Link>
                   <p className="text-sm text-gray-500">{item.categoria}</p>
+                  {(item.talla || item.color) && (
+                    <p className="text-xs text-gray-500">
+                      {[item.talla && `Talla ${item.talla}`, item.color]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  )}
                   <p className="mt-1 font-semibold text-[#F97316]">
                     {formatearPrecio(item.precio)} c/u
                   </p>
@@ -106,7 +113,7 @@ export default function Carrito() {
 
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => quitarDelCarrito(item.id)}
+                    onClick={() => quitarDelCarrito(item)}
                     className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-sm transition-all duration-200 hover:bg-gray-50"
                     aria-label="Disminuir cantidad"
                   >
@@ -129,7 +136,7 @@ export default function Carrito() {
                     {formatearPrecio(item.precio * item.cantidad)}
                   </p>
                   <button
-                    onClick={() => eliminarDelCarrito(item.id)}
+                    onClick={() => eliminarDelCarrito(item)}
                     className="text-xs font-medium text-red-500 transition-all duration-200 hover:text-red-700"
                   >
                     Eliminar

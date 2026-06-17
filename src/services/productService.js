@@ -1,25 +1,50 @@
 import { supabase } from "../lib/supabaseClient"
 import { mapearProducto, mapearProductoLocal } from "./productMapper"
-import { productos as productosLocal } from "../data/productos"
+import { productos as productosLocal, categorias as categoriasLocal } from "../data/productos"
 
 const USAR_SUPABASE = import.meta.env.VITE_USAR_SUPABASE === "true"
 
+// Solo columnas de la tabla productos en Supabase (esquema Zapatos RAA)
 const SELECT_PRODUCTO =
-  "*, categorias(nombre), producto_imagenes(url, orden)"
+  "id, nombre, descripcion, precio, categoria, imagen, imagenes, stock, tallas, colores, marca, genero, proveedor"
+
+function asegurarCliente() {
+  if (!supabase) {
+    throw new Error(
+      "Supabase no configurado. Revisa VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env"
+    )
+  }
+}
+
+async function consultarProductos(opciones = {}) {
+  asegurarCliente()
+  const { limite, categoria, q, orden, excluirId, ids } = opciones
+
+  let query = supabase.from("productos").select(SELECT_PRODUCTO)
+
+  if (excluirId) query = query.neq("id", excluirId)
+  if (ids?.length) query = query.in("id", ids)
+  if (categoria) query = query.eq("categoria", categoria)
+  if (q) query = query.ilike("nombre", `%${q}%`)
+
+  if (orden === "precio_asc" || orden === "menor")
+    query = query.order("precio", { ascending: true })
+  else if (orden === "precio_desc" || orden === "mayor")
+    query = query.order("precio", { ascending: false })
+  else query = query.order("id")
+
+  if (limite) query = query.limit(limite)
+
+  const { data, error } = await query
+  if (error) throw new Error("Error al obtener productos: " + error.message)
+  return (data || []).map(mapearProducto)
+}
 
 // --- FUNCIONES PÚBLICAS ---
 
 export async function obtenerTodosLosProductos() {
   if (!USAR_SUPABASE) return productosLocal.map(mapearProductoLocal)
-
-  const { data, error } = await supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .eq("activo", true)
-    .order("id")
-
-  if (error) throw new Error("Error al obtener productos: " + error.message)
-  return data.map(mapearProducto)
+  return consultarProductos()
 }
 
 export async function obtenerProductoPorId(id) {
@@ -28,15 +53,8 @@ export async function obtenerProductoPorId(id) {
     return p ? mapearProductoLocal(p) : null
   }
 
-  const { data, error } = await supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .eq("id", id)
-    .eq("activo", true)
-    .single()
-
-  if (error) return null
-  return mapearProducto(data)
+  const productos = await consultarProductos({ ids: [Number(id)] })
+  return productos[0] || null
 }
 
 export async function obtenerProductosPorIds(ids) {
@@ -47,53 +65,36 @@ export async function obtenerProductosPorIds(ids) {
       .map(mapearProductoLocal)
   }
 
-  const { data, error } = await supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .in("id", ids)
-    .eq("activo", true)
-
-  if (error)
-    throw new Error("Error al obtener productos por ids: " + error.message)
-
-  const productosMapeados = data.map(mapearProducto)
+  const productos = await consultarProductos({ ids: ids.map(Number) })
   return ids
-    .map((id) => productosMapeados.find((p) => p.id === Number(id)))
+    .map((id) => productos.find((p) => p.id === Number(id)))
     .filter(Boolean)
 }
 
-export async function obtenerProductosDestacados(limite = 6) {
-  if (!USAR_SUPABASE)
+export async function obtenerProductosDestacados(limite = 8) {
+  if (!USAR_SUPABASE) {
     return productosLocal
       .filter((p) => p.destacado)
       .slice(0, limite)
       .map(mapearProductoLocal)
+  }
 
-  const { data, error } = await supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .eq("activo", true)
-    .eq("destacado", true)
-    .limit(limite)
-
-  if (error) throw new Error("Error al obtener destacados: " + error.message)
-  return data.map(mapearProducto)
+  return consultarProductos({ limite })
 }
 
 export async function obtenerCategorias() {
   if (!USAR_SUPABASE) {
-    const unicas = [...new Set(productosLocal.map((p) => p.categoria))]
-    return unicas.map((nombre) => ({ nombre }))
+    return categoriasLocal.map((nombre) => ({ nombre }))
   }
 
-  const { data, error } = await supabase
-    .from("categorias")
-    .select("id, nombre, emoji")
-    .eq("activa", true)
-    .order("nombre")
+  asegurarCliente()
+
+  const { data, error } = await supabase.from("productos").select("categoria")
 
   if (error) throw new Error("Error al obtener categorías: " + error.message)
-  return data
+
+  const unicas = [...new Set((data || []).map((p) => p.categoria).filter(Boolean))]
+  return unicas.sort().map((nombre) => ({ nombre }))
 }
 
 export async function obtenerProductosFiltrados({ categoria, q, orden } = {}) {
@@ -112,31 +113,7 @@ export async function obtenerProductosFiltrados({ categoria, q, orden } = {}) {
     return resultado.map(mapearProductoLocal)
   }
 
-  let query = supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .eq("activo", true)
-
-  if (categoria) {
-    const { data: cat } = await supabase
-      .from("categorias")
-      .select("id")
-      .eq("nombre", categoria)
-      .single()
-    if (cat) query = query.eq("categoria_id", cat.id)
-  }
-
-  if (q) query = query.ilike("nombre", `%${q}%`)
-
-  if (orden === "precio_asc" || orden === "menor")
-    query = query.order("precio", { ascending: true })
-  else if (orden === "precio_desc" || orden === "mayor")
-    query = query.order("precio", { ascending: false })
-  else query = query.order("id")
-
-  const { data, error } = await query
-  if (error) throw new Error("Error al filtrar productos: " + error.message)
-  return data.map(mapearProducto)
+  return consultarProductos({ categoria, q, orden })
 }
 
 export async function obtenerProductosRelacionados(id, limite = 4) {
@@ -152,24 +129,11 @@ export async function obtenerProductosRelacionados(id, limite = 4) {
       .map(mapearProductoLocal)
   }
 
-  const { data: cat } = await supabase
-    .from("categorias")
-    .select("id")
-    .eq("nombre", producto.categoria)
-    .single()
-
-  if (!cat) return []
-
-  const { data, error } = await supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .eq("activo", true)
-    .eq("categoria_id", cat.id)
-    .neq("id", id)
-    .limit(limite)
-
-  if (error) return []
-  return data.map(mapearProducto)
+  return consultarProductos({
+    categoria: producto.categoria,
+    excluirId: id,
+    limite,
+  })
 }
 
 export async function obtenerProductosSugeridos(idsExcluir = [], limite = 3) {
@@ -182,17 +146,6 @@ export async function obtenerProductosSugeridos(idsExcluir = [], limite = 3) {
       .map(mapearProductoLocal)
   }
 
-  let query = supabase
-    .from("productos")
-    .select(SELECT_PRODUCTO)
-    .eq("activo", true)
-
-  if (idsExcluir.length > 0) {
-    query = query.not("id", "in", `(${idsExcluir.join(",")})`)
-  }
-
-  const { data, error } = await query.limit(limite)
-
-  if (error) return []
-  return data.map(mapearProducto)
+  const todos = await consultarProductos()
+  return todos.filter((p) => !idsExcluir.includes(p.id)).slice(0, limite)
 }

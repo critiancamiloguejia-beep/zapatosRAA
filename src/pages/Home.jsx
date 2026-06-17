@@ -18,26 +18,33 @@ import ProductCard from "../components/ProductCard"
 import BrandLogo from "../components/BrandLogo"
 import { CLASES_HOME_PRINCIPAL } from "../utils/brand"
 
+const DESTACADOS_LIMITE = 8
+
 const HERO_IMAGENES = [
-  "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1400&q=80",
-  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=80",
-  "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1400&q=80",
-  "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1400&q=80",
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1400&q=80",
+  "/images/hero/hero-principal.png",
+  "/images/hero/hero-1.png",
+  "/images/hero/hero-2.png",
+  "/images/hero/hero-3.png",
+  "/images/hero/hero-4.png",
 ]
 
 const IMAGENES_CATEGORIA = {
-  Accesorios:
-    "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80",
-  Calzado:
+  "Zapatos Deportivos":
     "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80",
-  Deportes:
-    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=80",
-  Electrónica:
-    "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&q=80",
-  Hogar:
-    "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=80",
-  Ropa: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80",
+  "Zapatos Casuales":
+    "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&q=80",
+  "Zapatos Formales":
+    "https://images.unsplash.com/photo-1614252238956-54c2563aa9f3?w=400&q=80",
+  Botas:
+    "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400&q=80",
+  Sandalias:
+    "https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400&q=80",
+  "Zapatos de Vestir":
+    "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&q=80",
+  "Zapatos para Correr":
+    "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80",
+  "Zapatos de Moda":
+    "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&q=80",
 }
 
 function imagenCategoria(nombre) {
@@ -96,90 +103,72 @@ const PASOS_COMPRA = [
 const TESTIMONIOS = [
   {
     nombre: "María G.",
-    ciudad: "Bogotá",
     rating: 5,
-    texto:
-      "Las botas llegaron en perfectas condiciones y más rápido de lo esperado. El pago contraentrega me dio mucha confianza. ¡Volveré a comprar!",
-    producto: "Botas Brahma C",
+    texto: "Excelente calidad, los zapatos son muy cómodos",
     inicial: "MG",
   },
   {
     nombre: "Carlos R.",
-    ciudad: "Medellín",
     rating: 5,
-    texto:
-      "Excelente calidad, la faja es justo lo que necesitaba. El envío fue rápido y el producto llegó bien empacado.",
-    producto: "Faja Cinturilla Reloj de Arena",
+    texto: "El servicio es increíble, llegaron antes de lo esperado",
     inicial: "CR",
   },
   {
-    nombre: "Valentina T.",
-    ciudad: "Cali",
+    nombre: "Laura M.",
     rating: 5,
-    texto:
-      "Me encantaron los tenis, son súper cómodos y bonitos. El proceso de compra fue muy fácil y el pago al recibir me pareció genial.",
-    producto: "Tenis Deportivos para Dama",
-    inicial: "VT",
+    texto: "Ya he comprado 3 pares, siempre quedan perfectos",
+    inicial: "LM",
   },
   {
-    nombre: "Andrés M.",
-    ciudad: "Barranquilla",
-    rating: 4,
-    texto:
-      "El mouse ergonómico es perfecto para el trabajo. Ya no siento dolor en la muñeca. Lo recomiendo totalmente.",
-    producto: "Mouse Ergonómico Vertical M89",
-    inicial: "AM",
+    nombre: "Ana P.",
+    rating: 5,
+    texto: "Me encanta la variedad de colores y tallas",
+    inicial: "AP",
   },
   {
-    nombre: "Luisa F.",
-    ciudad: "Bucaramanga",
+    nombre: "José L.",
     rating: 5,
-    texto:
-      "El buzo Nirvana es de muy buena tela, suave y con buen acabado. Llegó en 3 días hábiles. Muy satisfecha.",
-    producto: "Buzo Nirvana Estampado Unisex",
-    inicial: "LF",
+    texto: "Los materiales son de primera calidad",
+    inicial: "JL",
   },
   {
-    nombre: "Jorge H.",
-    ciudad: "Pasto",
+    nombre: "Sofía C.",
     rating: 5,
-    texto:
-      "Primera vez comprando online con pago contraentrega y fue una experiencia muy buena. El producto llegó tal cual en las fotos.",
-    producto: "Conjunto Deportivo Largo",
-    inicial: "JH",
+    texto: "Mi tienda favorita para comprar zapatos",
+    inicial: "SC",
   },
 ]
 
 const FAQ = [
   {
-    pregunta: "¿Cómo funciona el pago contraentrega?",
+    pregunta: "¿Cómo saber mi talla correcta?",
     respuesta:
-      "Muy simple — haces tu pedido en nuestra tienda, y pagas en efectivo cuando el mensajero te entrega el producto en tu puerta. No necesitas tarjeta de crédito ni cuenta bancaria.",
+      "Te recomendamos medir tu pie y revisar nuestra guía de tallas. También puedes contactarnos para asesoría personalizada.",
   },
   {
-    pregunta: "¿Cuánto tarda el envío?",
+    pregunta: "¿Los zapatos son originales?",
     respuesta:
-      "Generalmente entre 3 y 5 días hábiles en ciudades principales (Bogotá, Medellín, Cali, Barranquilla). En municipios o zonas más alejadas puede tomar entre 5 y 8 días hábiles.",
+      "Sí, todos nuestros productos son 100% originales y de la mejor calidad.",
   },
   {
-    pregunta: "¿A qué ciudades hacen envíos?",
+    pregunta: "¿Cuánto tiempo tarda el envío?",
     respuesta:
-      "Hacemos envíos a toda Colombia, incluyendo municipios y zonas apartadas.",
+      "Los envíos nacionales tardan entre 2-5 días hábiles. Envíos internacionales pueden tardar 7-15 días.",
   },
   {
-    pregunta: "¿Qué pasa si el producto llega dañado o incompleto?",
+    pregunta: "¿Puedo cambiar o devolver un producto?",
     respuesta:
-      "Debes revisar el producto al recibirlo. Si tiene algún defecto de fábrica o llegó incompleto, notifícanos dentro de las 24 horas siguientes por WhatsApp y gestionamos la garantía contigo.",
+      "Sí, tienes 30 días para realizar cambios o devoluciones si el producto no te queda bien.",
   },
   {
-    pregunta: "¿Puedo elegir talla y color antes de que me lo envíen?",
+    pregunta: "¿Qué métodos de pago aceptan?",
     respuesta:
-      "Sí, para productos con tallas o colores disponibles, escríbenos por WhatsApp antes o después de hacer tu pedido y coordinamos la variante que necesitas.",
+      "Aceptamos tarjetas de crédito/débito, transferencias bancarias y pago contra entrega.",
   },
   {
-    pregunta: "¿Es seguro comprar en RAA?",
+    pregunta: "¿Tienen tallas para niños?",
     respuesta:
-      "Sí. Con el pago contraentrega nunca pagas por adelantado — solo pagas cuando tienes el producto en tus manos. Además trabajamos con proveedores verificados y transportadoras reconocidas a nivel nacional.",
+      "Sí, contamos con tallas desde el 25 hasta el 34 para niños y niñas.",
   },
 ]
 
@@ -214,22 +203,22 @@ function HeroCarrusel() {
   }, [])
 
   return (
-    <section className="relative min-h-[480px] overflow-hidden md:min-h-[560px]">
+    <section className="relative min-h-[480px] overflow-hidden bg-gray-900 md:min-h-[560px]">
       {HERO_IMAGENES.map((url, i) => (
         <div
           key={url}
-          className={`absolute inset-0 transition-opacity duration-700 ${
+          className={`absolute inset-0 flex items-center justify-center bg-gray-900 transition-opacity duration-700 ${
             i === actual ? "opacity-100" : "opacity-0"
           }`}
           aria-hidden={i !== actual}
         >
           <img
             src={url}
-            alt=""
-            className="h-full w-full object-cover"
+            alt={i === 0 ? "Zapatos RAA — colección principal" : ""}
+            className="max-h-full max-w-full object-contain object-center"
             loading={i === 0 ? "eager" : "lazy"}
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
       ))}
 
@@ -238,18 +227,17 @@ function HeroCarrusel() {
           Temporada de ofertas
         </span>
         <h1 className="mt-4 max-w-2xl text-balance text-4xl font-extrabold leading-tight text-white md:text-6xl">
-          Todo lo que buscas, al mejor precio
+          Encuentra el calzado perfecto para ti
         </h1>
         <p className="mt-4 max-w-xl text-pretty text-lg text-gray-300">
-          Miles de productos con envío rápido a todo el país. Compra hoy y{" "}
-          <span className="font-semibold text-white">paga cuando recibas</span>.
+          Calidad, comodidad y estilo en cada paso
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             to="/productos"
             className="rounded-full bg-orange-500 px-7 py-3 font-semibold text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600"
           >
-            Ver ofertas
+            Ver Colección
           </Link>
           <a
             href="#categorias"
@@ -302,16 +290,14 @@ function SeccionTestimonios() {
         <div className="-mx-4 mt-8 flex gap-4 overflow-x-auto px-4 pb-2 snap-x md:mx-0 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible lg:grid-cols-3">
           {TESTIMONIOS.map((t) => (
             <article
-              key={`${t.nombre}-${t.ciudad}`}
+              key={t.nombre}
               className="flex min-w-[280px] snap-start flex-col rounded-2xl border border-gray-100 bg-gray-50 p-6 shadow-sm md:min-w-0"
             >
               <div className="flex items-center gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F97316] text-sm font-bold text-white">
                   {t.inicial}
                 </span>
-                <p className="text-sm font-semibold text-gray-900">
-                  {t.nombre} — {t.ciudad}
-                </p>
+                <p className="text-sm font-semibold text-gray-900">{t.nombre}</p>
               </div>
               <div className="mt-3">
                 <Estrellas rating={t.rating} />
@@ -319,7 +305,6 @@ function SeccionTestimonios() {
               <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-gray-700">
                 “{t.texto}”
               </blockquote>
-              <p className="mt-4 text-xs text-gray-500">— {t.producto}</p>
             </article>
           ))}
         </div>
@@ -384,13 +369,16 @@ export default function Home() {
   const [filtro, setFiltro] = useState("Todos")
 
   useEffect(() => {
-    Promise.all([obtenerProductosDestacados(6), obtenerCategorias()])
+    Promise.all([obtenerProductosDestacados(DESTACADOS_LIMITE), obtenerCategorias()])
       .then(([prods, cats]) => {
         setDestacados(prods)
         setCategorias(cats)
         setCargando(false)
       })
-      .catch(() => setCargando(false))
+      .catch((err) => {
+        console.error("Error cargando productos:", err)
+        setCargando(false)
+      })
   }, [])
 
   const tabs = ["Todos", ...categorias.map((c) => c.nombre)]
@@ -488,7 +476,7 @@ export default function Home() {
       <section className="bg-[#F9FAFB]">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <h2 className="text-center text-2xl font-bold md:text-3xl">
-            ¿Cómo comprar en RAA?
+            ¿Cómo comprar en Zapatos RAA?
           </h2>
           <div className="mt-10 flex flex-col items-center gap-10 md:flex-row md:items-start md:justify-center md:gap-6">
             {PASOS_COMPRA.map((paso, i) => (
@@ -549,7 +537,7 @@ export default function Home() {
 
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {cargando
-              ? Array.from({ length: 6 }).map((_, i) => (
+              ? Array.from({ length: DESTACADOS_LIMITE }).map((_, i) => (
                   <SkeletonProducto key={i} />
                 ))
               : productosFiltrados.length > 0
@@ -590,13 +578,13 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative flex h-full flex-col items-center justify-center px-6 text-center text-white">
             <h2 className="text-2xl font-extrabold md:text-4xl">
-              Descubre nuestra colección de Moda
+              Descubre nuestra colección de calzado
             </h2>
             <p className="mt-2 max-w-lg text-sm text-gray-200 md:text-base">
-              Ropa y accesorios para cada ocasión
+              Zapatos para cada ocasión, estilo y talla
             </p>
             <Link
-              to="/productos?categoria=Ropa"
+              to="/productos?categoria=Zapatos%20Deportivos"
               className="mt-6 inline-flex items-center gap-1 rounded-full bg-white px-6 py-3 text-sm font-semibold text-gray-900 transition hover:bg-gray-100"
             >
               Ver productos →
@@ -609,7 +597,7 @@ export default function Home() {
       <section className="bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 py-12 md:py-16">
           <h2 className="text-center text-2xl font-bold md:text-3xl">
-            ¿Por qué elegir RAA?
+            ¿Por qué elegir Zapatos RAA?
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {RAZONES.map(({ icon: Icon, titulo, desc }) => (

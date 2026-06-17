@@ -4,12 +4,14 @@ import {
   obtenerProductoPorId,
   obtenerProductosRelacionados,
 } from "../services/productService"
+import { construirGaleria } from "../services/productMapper"
 import { formatearPrecio } from "../utils/formatters"
 import { useCarrito } from "../context/CartContext"
 import ProductCard from "../components/ProductCard"
 import ImageGallery from "../components/ImageGallery"
 import StarRating from "../components/StarRating"
 import BotonFavorito from "../components/BotonFavorito"
+import { TALLAS, COLORES } from "../utils/constants"
 
 // Página de detalle de un producto individual
 export default function DetalleProducto() {
@@ -17,6 +19,8 @@ export default function DetalleProducto() {
   const navigate = useNavigate()
   const { agregarAlCarrito } = useCarrito()
   const [cantidad, setCantidad] = useState(1)
+  const [talla, setTalla] = useState(TALLAS[0])
+  const [color, setColor] = useState(COLORES[0].nombre)
   const [producto, setProducto] = useState(null)
   const [relacionados, setRelacionados] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -31,6 +35,8 @@ export default function DetalleProducto() {
     setCargando(true)
     setError(null)
     setCantidad(1)
+    setTalla(TALLAS[0])
+    setColor(COLORES[0].nombre)
 
     obtenerProductoPorId(id)
       .then((data) => {
@@ -51,15 +57,19 @@ export default function DetalleProducto() {
       })
   }, [id, navigate, reintentar])
 
+  const productoConVariantes = producto
+    ? { ...producto, talla, color }
+    : null
+
   const manejarAgregar = () => {
-    if (!producto || agotado) return
-    agregarAlCarrito(producto, cantidad)
+    if (!productoConVariantes || agotado) return
+    agregarAlCarrito(productoConVariantes, cantidad)
     navigate("/carrito")
   }
 
   const manejarComprarAhora = () => {
-    if (!producto || agotado) return
-    agregarAlCarrito(producto, cantidad)
+    if (!productoConVariantes || agotado) return
+    agregarAlCarrito(productoConVariantes, cantidad)
     navigate("/checkout")
   }
 
@@ -102,7 +112,7 @@ export default function DetalleProducto() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="relative">
           <ImageGallery
-            imagenes={producto.imagenes}
+            imagenes={construirGaleria(producto)}
             emoji={producto.emoji}
             nombre={producto.nombre}
             className="text-9xl"
@@ -164,6 +174,54 @@ export default function DetalleProducto() {
               </p>
             </div>
           )}
+
+          <div className="mb-6">
+            <p className="mb-2 block text-sm font-medium text-gray-700">
+              Talla
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {TALLAS.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTalla(t)}
+                  disabled={agotado}
+                  className={`flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+                    talla === t
+                      ? "border-[#F97316] bg-orange-50 text-[#F97316]"
+                      : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <p className="mb-2 block text-sm font-medium text-gray-700">
+              Color
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {COLORES.map((c) => (
+                <button
+                  key={c.nombre}
+                  type="button"
+                  onClick={() => setColor(c.nombre)}
+                  disabled={agotado}
+                  title={c.nombre}
+                  aria-label={`Color ${c.nombre}`}
+                  className={`h-9 w-9 rounded-full border-2 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
+                    color === c.nombre
+                      ? "border-[#F97316] ring-2 ring-orange-200"
+                      : "border-gray-200 hover:scale-105"
+                  }`}
+                  style={{ backgroundColor: c.hex }}
+                />
+              ))}
+            </div>
+            <p className="mt-2 text-sm text-gray-500">{color}</p>
+          </div>
 
           <div className="mb-6">
             <label

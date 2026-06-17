@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-const STORAGE_KEY = "tiendanova-oferta-fin"
+const STORAGE_KEY = "zapatosraa-oferta-fin"
 const DURACION_MS = 24 * 60 * 60 * 1000 // 24 horas
 
 // Obtener o crear la fecha de fin del contador (persistida 24h)
