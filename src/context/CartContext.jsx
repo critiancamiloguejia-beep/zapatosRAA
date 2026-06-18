@@ -57,7 +57,7 @@ function carritoReducer(estado, accion) {
       }
 
       return {
-        items: [...estado.items, { ...producto, cantidad }],
+        items: [...estado.items, { ...producto, cantidad, talla: producto.talla ?? null, color: producto.color ?? null }],
       }
     }
 

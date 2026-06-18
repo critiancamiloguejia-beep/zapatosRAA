@@ -4,6 +4,8 @@ import { useCarrito } from "../context/CartContext"
 import { formatearPrecio } from "../utils/formatters"
 import { calcularTotales } from "../utils/calcularTotales"
 import { crearPedido } from "../services/orderService"
+import { abrirWhatsApp, mensajeConfirmacionPedido } from "../utils/whatsapp"
+import { claveItemCarrito, textoTalla, textoColor } from "../utils/cartHelpers"
 
 const USAR_SUPABASE = import.meta.env.VITE_USAR_SUPABASE === "true"
 
@@ -75,20 +77,29 @@ export default function Checkout() {
     return Object.keys(nuevosErrores).length === 0
   }
 
-  const guardarPedidoLocal = () => {
-    sessionStorage.setItem(
-      "ultimoPedido",
-      JSON.stringify({
-        ...formulario,
+  const enviarPedidoYWhatsApp = (datosPedido) => {
+    abrirWhatsApp(
+      mensajeConfirmacionPedido({
+        formulario,
         items,
-        subtotal: totales.subtotal,
-        costoEnvio: totales.costoEnvio,
-        total: totales.total,
-        fecha: new Date().toISOString(),
+        total: datosPedido.total,
       })
     )
+
+    sessionStorage.setItem("ultimoPedido", JSON.stringify(datosPedido))
     vaciarCarrito()
     navigate("/pedido-confirmado")
+  }
+
+  const guardarPedidoLocal = () => {
+    enviarPedidoYWhatsApp({
+      ...formulario,
+      items,
+      subtotal: totales.subtotal,
+      costoEnvio: totales.costoEnvio,
+      total: totales.total,
+      fecha: new Date().toISOString(),
+    })
   }
 
   const manejarEnviar = async (e) => {
@@ -115,25 +126,19 @@ export default function Checkout() {
         },
       })
 
-      sessionStorage.setItem(
-        "ultimoPedido",
-        JSON.stringify({
-          pedidoId: pedido.id,
-          nombreCompleto: formulario.nombreCompleto,
-          email: formulario.email,
-          telefono: formulario.telefono,
-          direccion: formulario.direccion,
-          ciudad: formulario.ciudad,
-          items,
-          subtotal: totales.subtotal,
-          costoEnvio: totales.costoEnvio,
-          total: pedido.total,
-          fecha: new Date().toISOString(),
-        })
-      )
-
-      vaciarCarrito()
-      navigate("/pedido-confirmado")
+      enviarPedidoYWhatsApp({
+        pedidoId: pedido.id,
+        nombreCompleto: formulario.nombreCompleto,
+        email: formulario.email,
+        telefono: formulario.telefono,
+        direccion: formulario.direccion,
+        ciudad: formulario.ciudad,
+        items,
+        subtotal: totales.subtotal,
+        costoEnvio: totales.costoEnvio,
+        total: pedido.total,
+        fecha: new Date().toISOString(),
+      })
     } catch {
       setErrorEnvio(
         "Hubo un problema al procesar tu pedido. Intenta de nuevo."
@@ -219,16 +224,30 @@ export default function Checkout() {
             Resumen del pedido
           </h2>
           <ul className="mb-4 divide-y divide-gray-100">
-            {items.map((item) => (
-              <li key={item.id} className="flex justify-between py-3 text-sm">
-                <span className="text-gray-600">
-                  {item.emoji} {item.nombre} × {item.cantidad}
-                </span>
-                <span className="font-medium text-gray-900">
-                  {formatearPrecio(item.precio * item.cantidad)}
-                </span>
-              </li>
-            ))}
+            {items.map((item) => {
+              const tallaTexto = textoTalla(item)
+              const colorTexto = textoColor(item)
+
+              return (
+                <li
+                  key={claveItemCarrito(item)}
+                  className="flex justify-between gap-4 py-3 text-sm"
+                >
+                  <div className="min-w-0 flex-1 text-gray-600">
+                    <p className="font-medium text-gray-900">
+                      {item.nombre} × {item.cantidad}
+                    </p>
+                    <ul className="mt-1 space-y-0.5 text-xs text-gray-500">
+                      {tallaTexto && <li>{tallaTexto}</li>}
+                      {colorTexto && <li>{colorTexto}</li>}
+                    </ul>
+                  </div>
+                  <span className="shrink-0 font-medium text-gray-900">
+                    {formatearPrecio(item.precio * item.cantidad)}
+                  </span>
+                </li>
+              )
+            })}
           </ul>
           <div className="mb-2 flex justify-between text-sm text-gray-600">
             <span>Subtotal</span>

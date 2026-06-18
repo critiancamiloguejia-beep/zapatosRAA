@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { formatearPrecio } from "../utils/formatters"
 import BrandLogo from "../components/BrandLogo"
+import { claveItemCarrito, textoTalla, textoColor } from "../utils/cartHelpers"
 
 // Pantalla de confirmación después de completar el pedido
 export default function PedidoConfirmado() {
@@ -116,16 +117,22 @@ export default function PedidoConfirmado() {
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
             Productos ({pedido.items.length})
           </h2>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {pedido.items.map((item) => (
               <li
-                key={item.id}
-                className="flex items-center justify-between text-sm"
+                key={claveItemCarrito(item)}
+                className="flex items-start justify-between gap-4 text-sm"
               >
-                <span>
-                  {item.emoji} {item.nombre} × {item.cantidad}
-                </span>
-                <span className="font-medium">
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {item.nombre} × {item.cantidad}
+                  </p>
+                  <ul className="mt-1 space-y-0.5 text-xs text-gray-500">
+                    {textoTalla(item) && <li>{textoTalla(item)}</li>}
+                    {textoColor(item) && <li>{textoColor(item)}</li>}
+                  </ul>
+                </div>
+                <span className="shrink-0 font-medium">
                   {formatearPrecio(item.precio * item.cantidad)}
                 </span>
               </li>

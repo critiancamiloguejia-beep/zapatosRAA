@@ -7,6 +7,7 @@ import { calcularTotales } from "../utils/calcularTotales"
 import ProductCard from "../components/ProductCard"
 import ProductImage from "../components/ProductImage"
 import { getImagenUrl } from "../utils/storageHelpers"
+import { claveItemCarrito, textoTalla, textoColor } from "../utils/cartHelpers"
 
 // Página del carrito de compras
 export default function Carrito() {
@@ -77,10 +78,14 @@ export default function Carrito() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="divide-y divide-gray-100 rounded-xl border border-gray-100 bg-white shadow-sm">
-            {items.map((item) => (
+            {items.map((item) => {
+              const tallaTexto = textoTalla(item)
+              const colorTexto = textoColor(item)
+
+              return (
               <div
-                key={`${item.id}-${item.talla ?? ""}-${item.color ?? ""}`}
-                className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
+                key={claveItemCarrito(item)}
+                className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start"
               >
                 <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gray-50">
                   <ProductImage
@@ -91,27 +96,22 @@ export default function Carrito() {
                   />
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <Link
                     to={`/productos/${item.id}`}
                     className="font-semibold text-gray-900 transition-all duration-200 hover:text-[#F97316]"
                   >
                     {item.nombre}
                   </Link>
-                  <p className="text-sm text-gray-500">{item.categoria}</p>
-                  {(item.talla || item.color) && (
-                    <p className="text-xs text-gray-500">
-                      {[item.talla && `Talla ${item.talla}`, item.color]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                  )}
-                  <p className="mt-1 font-semibold text-[#F97316]">
-                    {formatearPrecio(item.precio)} c/u
-                  </p>
+                  <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                    {tallaTexto && <li>{tallaTexto}</li>}
+                    {colorTexto && <li>{colorTexto}</li>}
+                    <li>Cantidad: {item.cantidad}</li>
+                    <li>Precio unitario: {formatearPrecio(item.precio)}</li>
+                  </ul>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 sm:mt-1">
                   <button
                     onClick={() => quitarDelCarrito(item)}
                     className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-sm transition-all duration-200 hover:bg-gray-50"
@@ -131,10 +131,13 @@ export default function Carrito() {
                   </button>
                 </div>
 
-                <div className="flex flex-col items-end gap-2">
-                  <p className="font-semibold text-gray-900">
-                    {formatearPrecio(item.precio * item.cantidad)}
-                  </p>
+                <div className="flex flex-col items-end gap-2 sm:mt-1">
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">Subtotal</p>
+                    <p className="font-semibold text-gray-900">
+                      {formatearPrecio(item.precio * item.cantidad)}
+                    </p>
+                  </div>
                   <button
                     onClick={() => eliminarDelCarrito(item)}
                     className="text-xs font-medium text-red-500 transition-all duration-200 hover:text-red-700"
@@ -143,7 +146,7 @@ export default function Carrito() {
                   </button>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
 
