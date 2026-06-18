@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom"
 import CartIcon from "./CartIcon"
 import FavoritesIcon from "./FavoritesIcon"
 import BrandLogo from "./BrandLogo"
-import { MARCA, NOMBRE_TIENDA, CLASES_HEADER_MONOGRAMA, CLASES_HEADER_MONOGRAMA_MARCO, CLASES_HEADER_TEXTO } from "../utils/brand"
+import { MARCA } from "../utils/brand"
 
-export { NOMBRE_TIENDA }
+export { NOMBRE_TIENDA } from "../utils/brand"
 export const ALTURA_HEADER = "5rem"
 
 // Buscador del header: redirige a /productos con query param q
@@ -82,21 +82,14 @@ export default function Header({ sentinelRef }) {
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between pr-4 sm:pr-6 lg:pr-8">
           <Link
             to="/"
-            className="-ml-8 flex shrink-0 items-center gap-0 sm:-ml-6 sm:gap-0.5 transition-opacity hover:opacity-80"
+            className="flex shrink-0 items-center transition-opacity hover:opacity-80"
             aria-label={`${MARCA.nombre} — ${MARCA.eslogan}`}
           >
-            <span className={CLASES_HEADER_MONOGRAMA_MARCO} aria-hidden="true">
-              <BrandLogo
-                variant="monograma"
-                eager
-                className={CLASES_HEADER_MONOGRAMA}
-              />
-            </span>
-            <span
-              className={`font-brand font-bold leading-none tracking-wide text-gray-900 ${CLASES_HEADER_TEXTO}`}
-            >
-              {MARCA.nombre}
-            </span>
+            <BrandLogo
+              variant="horizontal"
+              eager
+              className="!h-12 !w-auto max-w-[11rem] object-contain sm:!h-14 sm:max-w-[13rem]"
+            />
           </Link>
 
           <nav className="flex items-center gap-1 sm:gap-2">

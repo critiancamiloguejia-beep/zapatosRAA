@@ -1,4 +1,5 @@
-import { MARCA } from "../utils/brand"
+import { MARCA, IMAGENES_LANDING } from "../utils/brand"
+import ImagenMarca from "./ImagenMarca"
 
 const TAMANOS = {
   principal: "h-16 w-auto sm:h-20",
@@ -6,28 +7,22 @@ const TAMANOS = {
   monograma: "h-24 w-[7.5rem] sm:h-28 sm:w-[9rem]",
 }
 
-// Muestra una de las tres versiones del logo RAA
+// Logo de marca Zapatos RAA (Supabase Storage + fallback local)
 export default function BrandLogo({
   variant = "principal",
   className = "",
   invert = false,
   eager = false,
 }) {
-  const src = MARCA.logos[variant]
-  const alt =
-    variant === "monograma"
-      ? MARCA.nombre
-      : `${MARCA.nombre} — ${MARCA.eslogan}`
+  const src = MARCA.logos[variant] ?? IMAGENES_LANDING.logo
 
   return (
-    <img
+    <ImagenMarca
       src={src}
-      alt={alt}
-      width={variant === "monograma" ? 144 : undefined}
-      height={variant === "monograma" ? 112 : undefined}
+      fallback={IMAGENES_LANDING.logoFallback}
+      alt={MARCA.nombre}
       className={`object-contain ${TAMANOS[variant]} ${invert ? "invert" : ""} ${className}`}
       loading={eager ? "eager" : "lazy"}
-      decoding="async"
     />
   )
 }

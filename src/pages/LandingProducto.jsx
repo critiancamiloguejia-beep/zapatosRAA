@@ -68,8 +68,8 @@ export default function LandingProducto() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 antialiased">
-      {/* Logo de marca — ancho completo, altura compacta */}
-      <header className="relative border-b border-gray-900/10">
+      {/* Logo de marca — ancho completo, altura compacta, sin deformar */}
+      <header className="relative border-b border-gray-900/10 bg-gray-950">
         <Link
           to="/"
           className="block w-full"
@@ -79,7 +79,7 @@ export default function LandingProducto() {
             src={IMAGENES_LANDING.logo}
             fallback={IMAGENES_LANDING.logoFallback}
             alt={MARCA.nombre}
-            className="h-16 w-full object-cover object-center sm:h-20"
+            className="h-14 w-full object-cover object-center sm:h-16"
             loading="eager"
           />
         </Link>
@@ -113,13 +113,17 @@ export default function LandingProducto() {
 
       {!cargando && producto && (
         <>
-          {/* Banner de marca — ancho completo, altura decorativa */}
-          <section className="w-full">
+          {/* Banner de marca — fallback: imagen principal del producto */}
+          <section className="w-full bg-gray-950">
             <ImagenMarca
               src={IMAGENES_LANDING.banner}
-              fallback={IMAGENES_LANDING.bannerFallback}
+              fallback={
+                producto.imagen ||
+                construirGaleria(producto)[0] ||
+                IMAGENES_LANDING.logoFallback
+              }
               alt={`${MARCA.nombre} — banner`}
-              className="h-24 w-full object-cover object-center sm:h-28 md:h-32"
+              className="h-28 w-full object-cover object-center sm:h-32 md:h-36"
             />
           </section>
 

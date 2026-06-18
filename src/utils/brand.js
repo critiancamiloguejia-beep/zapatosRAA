@@ -6,9 +6,9 @@ export const MARCA = {
   nombre: "Zapatos RAA",
   eslogan: "Calidad, comodidad y estilo en cada paso",
   logos: {
-    principal: "/images/marca/logo-marca.png",
-    horizontal: "/images/marca/logo-marca.png",
-    monograma: "/images/marca/logo-marca.png",
+    principal: `${SUPABASE_STORAGE}/logo-marca.jpg`,
+    horizontal: `${SUPABASE_STORAGE}/logo-marca.jpg`,
+    monograma: `${SUPABASE_STORAGE}/logo-marca.jpg`,
   },
 }
 
@@ -16,7 +16,6 @@ export const MARCA = {
 export const IMAGENES_LANDING = {
   banner: `${SUPABASE_STORAGE}/banner-marca.jpg`,
   logo: `${SUPABASE_STORAGE}/logo-marca.jpg`,
-  bannerFallback: "/images/marca/logo-marca.png",
   logoFallback: "/images/marca/logo-marca.png",
 }
 

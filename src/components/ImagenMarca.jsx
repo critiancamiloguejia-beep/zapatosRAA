@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-// Imagen de marca con fallback local si falla la URL de Supabase Storage
+// Imagen de marca con fallback si falla la URL de Supabase Storage
 export default function ImagenMarca({
   src,
   fallback,
@@ -9,6 +9,10 @@ export default function ImagenMarca({
   loading = "lazy",
 }) {
   const [url, setUrl] = useState(src)
+
+  useEffect(() => {
+    setUrl(src)
+  }, [src, fallback])
 
   return (
     <img
