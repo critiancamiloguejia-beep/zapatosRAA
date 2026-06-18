@@ -13,8 +13,7 @@ import StarRating from "../components/StarRating"
 import BotonFavorito from "../components/BotonFavorito"
 import ColorSelector from "../components/ColorSelector"
 import {
-  esColorCombinado,
-  mapearImagenesPorColor,
+  esColorSolido,
   imagenParaColor,
   MENSAJE_IMAGEN_REFERENCIA,
 } from "../utils/colorHelpers"
@@ -43,15 +42,8 @@ export default function DetalleProducto() {
 
     setColor(nombreColor)
 
-    if (esColorCombinado(nombreColor)) {
-      const imagen = imagenParaColor(data, nombreColor)
-      setImagenDestacada(imagen)
-      setAvisoReferencia(false)
-      return
-    }
-
-    setImagenDestacada(data.imagen || construirGaleria(data)[0] || null)
-    setAvisoReferencia(true)
+    setImagenDestacada(imagenParaColor(data, nombreColor))
+    setAvisoReferencia(esColorSolido(nombreColor))
   }, [])
 
   // Cargar producto y relacionados cuando cambia el id de la URL
@@ -142,7 +134,6 @@ export default function DetalleProducto() {
 
   const tallasDisponibles = producto.tallas ?? []
   const coloresDisponibles = producto.colores ?? []
-  const imagenesPorColor = mapearImagenesPorColor(producto)
 
   const manejarSeleccionColor = (nombreColor) => {
     aplicarSeleccionColor(producto, nombreColor)
@@ -245,15 +236,12 @@ export default function DetalleProducto() {
           </div>
 
           <div className="mb-6">
-            <p className="mb-3 block text-sm font-medium text-gray-700">
-              Color
-            </p>
             <ColorSelector
               colores={coloresDisponibles}
-              imagenesPorColor={imagenesPorColor}
               colorSeleccionado={color}
               onSeleccionar={manejarSeleccionColor}
               deshabilitado={agotado}
+              label="Color:"
             />
             {avisoReferencia && (
               <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
