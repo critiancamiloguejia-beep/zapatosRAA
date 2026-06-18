@@ -123,7 +123,7 @@ export default function LandingProducto() {
                 IMAGENES_LANDING.logoFallback
               }
               alt={`${MARCA.nombre} — banner`}
-              className="h-28 w-full object-cover object-center sm:h-32 md:h-36"
+              className="h-28 w-full object-contain object-center sm:h-32 md:h-36"
             />
           </section>
 
