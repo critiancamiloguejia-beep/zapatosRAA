@@ -76,7 +76,7 @@ export default function LandingProducto() {
           aria-label={`${MARCA.nombre} — Ir al inicio`}
         >
           <ImagenMarca
-            src="https://eogphstlsslxbpkxrjhk.supabase.co/storage/v1/object/public/productos/banner-raa.jpg"
+            src="https://eogphstlsslxbpkxrjhk.supabase.co/storage/v1/object/public/productos/banner-nuevo.jpg"
             fallback={IMAGENES_LANDING.logoFallback}
             alt={MARCA.nombre}
             className="block h-auto w-full object-contain object-center"
