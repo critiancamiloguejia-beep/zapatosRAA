@@ -139,9 +139,11 @@ export default function Checkout() {
         total: pedido.total,
         fecha: new Date().toISOString(),
       })
-    } catch {
+    } catch (err) {
       setErrorEnvio(
-        "Hubo un problema al procesar tu pedido. Intenta de nuevo."
+        err instanceof Error
+          ? err.message
+          : "Hubo un problema al procesar tu pedido. Intenta de nuevo."
       )
       setEnviando(false)
     }

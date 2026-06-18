@@ -1,42 +1,35 @@
 import { supabase } from "../lib/supabaseClient"
 
-// Crea un pedido en Supabase con sus items.
-// Devuelve el pedido creado o lanza un error.
-export async function crearPedido({ formulario, items, totales }) {
-  // UUID generado en cliente: evita SELECT tras INSERT (RLS solo permite INSERT en pedidos)
-  const pedidoId = crypto.randomUUID()
-
-  const { error: errorPedido } = await supabase.from("pedidos").insert({
-    id: pedidoId,
-    nombre_completo: formulario.nombreCompleto,
-    email: formulario.email,
-    telefono: formulario.telefono,
-    direccion: formulario.direccion,
-    ciudad: formulario.ciudad,
-    subtotal: totales.subtotal,
-    costo_envio: totales.costoEnvio,
-    total: totales.total,
-    estado: "pendiente",
-  })
-
-  if (errorPedido)
-    throw new Error("Error al crear el pedido: " + errorPedido.message)
-
-  const itemsParaInsertar = items.map((item) => ({
-    pedido_id: pedidoId,
+// Mapea items del carrito al JSONB de la tabla pedidos
+function itemsParaJson(items) {
+  return items.map((item) => ({
     producto_id: item.id,
     nombre: item.nombre,
     precio: item.precio,
     cantidad: item.cantidad,
-    emoji: item.emoji || "📦",
+    talla: item.talla ?? null,
+    color: item.color ?? null,
+    emoji: item.emoji ?? null,
   }))
+}
 
-  const { error: errorItems } = await supabase
-    .from("pedido_items")
-    .insert(itemsParaInsertar)
+// Crea un pedido en Supabase (tabla plana: pedidos con items JSONB)
+export async function crearPedido({ formulario, items, totales }) {
+  const payload = {
+    nombre: formulario.nombreCompleto.trim(),
+    telefono: formulario.telefono.trim(),
+    direccion: formulario.direccion.trim(),
+    ciudad: formulario.ciudad.trim(),
+    items: itemsParaJson(items),
+    total: Math.round(totales.total),
+    estado: "pendiente",
+  }
 
-  if (errorItems)
-    throw new Error("Error al guardar los items: " + errorItems.message)
+  const { error } = await supabase.from("pedidos").insert(payload)
 
-  return { id: pedidoId, total: totales.total }
+  if (error) {
+    throw new Error(`Error al crear el pedido: ${error.message}`)
+  }
+
+  return { id: null, total: payload.total }
 }
