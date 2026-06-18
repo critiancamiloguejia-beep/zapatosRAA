@@ -1,12 +1,23 @@
 // Identidad visual y constantes de marca Zapatos RAA
+const SUPABASE_STORAGE =
+  "https://eogphstlsslxbpkxrjhk.supabase.co/storage/v1/object/public/productos"
+
 export const MARCA = {
   nombre: "Zapatos RAA",
   eslogan: "Calidad, comodidad y estilo en cada paso",
   logos: {
-    principal: "/images/logo-principal.png",
-    horizontal: "/images/logo-horizontal.png",
-    monograma: "/images/logo-monograma.png",
+    principal: "/images/marca/logo-marca.png",
+    horizontal: "/images/marca/logo-marca.png",
+    monograma: "/images/marca/logo-marca.png",
   },
+}
+
+// Imágenes de la landing (/ofertas/:id) — Supabase Storage con fallback local
+export const IMAGENES_LANDING = {
+  banner: `${SUPABASE_STORAGE}/banner-marca.jpg`,
+  logo: `${SUPABASE_STORAGE}/logo-marca.jpg`,
+  bannerFallback: "/images/marca/logo-marca.png",
+  logoFallback: "/images/marca/logo-marca.png",
 }
 
 export const NOMBRE_TIENDA = MARCA.nombre
