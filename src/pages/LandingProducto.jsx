@@ -116,7 +116,7 @@ export default function LandingProducto() {
           {/* Banner de marca — fallback: imagen principal del producto */}
           <section className="w-full bg-gray-950">
             <ImagenMarca
-              src={IMAGENES_LANDING.banner}
+              src="https://eogphstlsslxbpkxrjhk.supabase.co/storage/v1/object/public/productos/logo-marca.jpg"
               fallback={
                 producto.imagen ||
                 construirGaleria(producto)[0] ||
