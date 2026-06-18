@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import {
   obtenerProductoPorId,
@@ -12,11 +12,6 @@ import ImageGallery from "../components/ImageGallery"
 import StarRating from "../components/StarRating"
 import BotonFavorito from "../components/BotonFavorito"
 import ColorSelector from "../components/ColorSelector"
-import {
-  esColorSolido,
-  imagenParaColor,
-  MENSAJE_IMAGEN_REFERENCIA,
-} from "../utils/colorHelpers"
 
 // Página de detalle de un producto individual
 export default function DetalleProducto() {
@@ -26,8 +21,6 @@ export default function DetalleProducto() {
   const [cantidad, setCantidad] = useState(1)
   const [talla, setTalla] = useState(null)
   const [color, setColor] = useState(null)
-  const [imagenDestacada, setImagenDestacada] = useState(null)
-  const [avisoReferencia, setAvisoReferencia] = useState(false)
   const [producto, setProducto] = useState(null)
   const [relacionados, setRelacionados] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -37,15 +30,6 @@ export default function DetalleProducto() {
   const stock = producto?.stock ?? 0
   const agotado = stock === 0
 
-  const aplicarSeleccionColor = useCallback((data, nombreColor) => {
-    if (!data || !nombreColor) return
-
-    setColor(nombreColor)
-
-    setImagenDestacada(imagenParaColor(data, nombreColor))
-    setAvisoReferencia(esColorSolido(nombreColor))
-  }, [])
-
   // Cargar producto y relacionados cuando cambia el id de la URL
   useEffect(() => {
     setCargando(true)
@@ -53,8 +37,6 @@ export default function DetalleProducto() {
     setCantidad(1)
     setTalla(null)
     setColor(null)
-    setImagenDestacada(null)
-    setAvisoReferencia(false)
 
     obtenerProductoPorId(id)
       .then((data) => {
@@ -64,8 +46,7 @@ export default function DetalleProducto() {
         }
         setProducto(data)
         setTalla(data.tallas?.[0] ?? null)
-        const primerColor = data.colores?.[0] ?? null
-        if (primerColor) aplicarSeleccionColor(data, primerColor)
+        setColor(data.colores?.[0] ?? null)
         return obtenerProductosRelacionados(id, 4)
       })
       .then((rel) => {
@@ -76,7 +57,7 @@ export default function DetalleProducto() {
         setError("No se pudo cargar el producto")
         setCargando(false)
       })
-  }, [id, navigate, reintentar, aplicarSeleccionColor])
+  }, [id, navigate, reintentar])
 
   const productoConVariantes = producto
     ? {
@@ -135,17 +116,12 @@ export default function DetalleProducto() {
   const tallasDisponibles = producto.tallas ?? []
   const coloresDisponibles = producto.colores ?? []
 
-  const manejarSeleccionColor = (nombreColor) => {
-    aplicarSeleccionColor(producto, nombreColor)
-  }
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div className="relative">
           <ImageGallery
             imagenes={construirGaleria(producto)}
-            imagenDestacada={imagenDestacada}
             emoji={producto.emoji}
             nombre={producto.nombre}
             className="text-9xl"
@@ -239,15 +215,10 @@ export default function DetalleProducto() {
             <ColorSelector
               colores={coloresDisponibles}
               colorSeleccionado={color}
-              onSeleccionar={manejarSeleccionColor}
+              onSeleccionar={setColor}
               deshabilitado={agotado}
               label="Color:"
             />
-            {avisoReferencia && (
-              <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-                {MENSAJE_IMAGEN_REFERENCIA}
-              </p>
-            )}
           </div>
 
           <div className="mb-6">

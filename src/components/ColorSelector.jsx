@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react"
 
-// Selector desplegable de color / variante del producto
+// Selector de color para el carrito (no modifica la imagen del producto)
 export default function ColorSelector({
   colores = [],
   colorSeleccionado,
