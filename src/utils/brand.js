@@ -12,12 +12,14 @@ export const MARCA = {
   },
 }
 
-// Imágenes de la landing (/ofertas/:id) — Supabase Storage con fallback local
+// Imágenes de la landing (/ofertas/:id) — solo logo-marca.jpg en Supabase
 export const IMAGENES_LANDING = {
-  banner: `${SUPABASE_STORAGE}/banner-marca.jpg`,
   logo: `${SUPABASE_STORAGE}/logo-marca.jpg`,
-  logoFallback: "/images/marca/logo-marca.png",
+  logoFallback: "/images/marca/banner-marca.jpg",
 }
+
+// Fallback cuadrado para header compacto de la tienda
+export const LOGO_FALLBACK_COMPACT = "/images/marca/logo-marca.png"
 
 export const NOMBRE_TIENDA = MARCA.nombre
 export const ESLOGAN = MARCA.eslogan

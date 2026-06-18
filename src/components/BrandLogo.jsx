@@ -1,4 +1,4 @@
-import { MARCA, IMAGENES_LANDING } from "../utils/brand"
+import { MARCA, IMAGENES_LANDING, LOGO_FALLBACK_COMPACT } from "../utils/brand"
 import ImagenMarca from "./ImagenMarca"
 
 const TAMANOS = {
@@ -19,7 +19,7 @@ export default function BrandLogo({
   return (
     <ImagenMarca
       src={src}
-      fallback={IMAGENES_LANDING.logoFallback}
+      fallback={LOGO_FALLBACK_COMPACT}
       alt={MARCA.nombre}
       className={`object-contain ${TAMANOS[variant]} ${invert ? "invert" : ""} ${className}`}
       loading={eager ? "eager" : "lazy"}
