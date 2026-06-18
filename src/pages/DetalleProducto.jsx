@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import {
   obtenerProductoPorId,
@@ -11,7 +11,13 @@ import ProductCard from "../components/ProductCard"
 import ImageGallery from "../components/ImageGallery"
 import StarRating from "../components/StarRating"
 import BotonFavorito from "../components/BotonFavorito"
-import { colorAHex } from "../utils/colorHelpers"
+import ColorSelector from "../components/ColorSelector"
+import {
+  esColorCombinado,
+  mapearImagenesPorColor,
+  imagenParaColor,
+  MENSAJE_IMAGEN_REFERENCIA,
+} from "../utils/colorHelpers"
 
 // Página de detalle de un producto individual
 export default function DetalleProducto() {
@@ -21,6 +27,8 @@ export default function DetalleProducto() {
   const [cantidad, setCantidad] = useState(1)
   const [talla, setTalla] = useState(null)
   const [color, setColor] = useState(null)
+  const [imagenDestacada, setImagenDestacada] = useState(null)
+  const [avisoReferencia, setAvisoReferencia] = useState(false)
   const [producto, setProducto] = useState(null)
   const [relacionados, setRelacionados] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -30,6 +38,22 @@ export default function DetalleProducto() {
   const stock = producto?.stock ?? 0
   const agotado = stock === 0
 
+  const aplicarSeleccionColor = useCallback((data, nombreColor) => {
+    if (!data || !nombreColor) return
+
+    setColor(nombreColor)
+
+    if (esColorCombinado(nombreColor)) {
+      const imagen = imagenParaColor(data, nombreColor)
+      setImagenDestacada(imagen)
+      setAvisoReferencia(false)
+      return
+    }
+
+    setImagenDestacada(data.imagen || construirGaleria(data)[0] || null)
+    setAvisoReferencia(true)
+  }, [])
+
   // Cargar producto y relacionados cuando cambia el id de la URL
   useEffect(() => {
     setCargando(true)
@@ -37,6 +61,8 @@ export default function DetalleProducto() {
     setCantidad(1)
     setTalla(null)
     setColor(null)
+    setImagenDestacada(null)
+    setAvisoReferencia(false)
 
     obtenerProductoPorId(id)
       .then((data) => {
@@ -46,7 +72,8 @@ export default function DetalleProducto() {
         }
         setProducto(data)
         setTalla(data.tallas?.[0] ?? null)
-        setColor(data.colores?.[0] ?? null)
+        const primerColor = data.colores?.[0] ?? null
+        if (primerColor) aplicarSeleccionColor(data, primerColor)
         return obtenerProductosRelacionados(id, 4)
       })
       .then((rel) => {
@@ -57,7 +84,7 @@ export default function DetalleProducto() {
         setError("No se pudo cargar el producto")
         setCargando(false)
       })
-  }, [id, navigate, reintentar])
+  }, [id, navigate, reintentar, aplicarSeleccionColor])
 
   const productoConVariantes = producto
     ? {
@@ -115,6 +142,11 @@ export default function DetalleProducto() {
 
   const tallasDisponibles = producto.tallas ?? []
   const coloresDisponibles = producto.colores ?? []
+  const imagenesPorColor = mapearImagenesPorColor(producto)
+
+  const manejarSeleccionColor = (nombreColor) => {
+    aplicarSeleccionColor(producto, nombreColor)
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -122,6 +154,7 @@ export default function DetalleProducto() {
         <div className="relative">
           <ImageGallery
             imagenes={construirGaleria(producto)}
+            imagenDestacada={imagenDestacada}
             emoji={producto.emoji}
             nombre={producto.nombre}
             className="text-9xl"
@@ -212,58 +245,20 @@ export default function DetalleProducto() {
           </div>
 
           <div className="mb-6">
-            <p className="mb-2 block text-sm font-medium text-gray-700">
+            <p className="mb-3 block text-sm font-medium text-gray-700">
               Color
             </p>
-            {coloresDisponibles.length > 0 ? (
-              <>
-                <div className="flex flex-wrap gap-2">
-                  {coloresDisponibles.map((nombreColor) => {
-                    const hex = colorAHex(nombreColor)
-                    const seleccionado = color === nombreColor
-
-                    if (hex) {
-                      return (
-                        <button
-                          key={nombreColor}
-                          type="button"
-                          onClick={() => setColor(nombreColor)}
-                          disabled={agotado}
-                          title={nombreColor}
-                          aria-label={`Color ${nombreColor}`}
-                          className={`h-9 w-9 rounded-full border-2 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
-                            seleccionado
-                              ? "border-[#F97316] ring-2 ring-orange-200"
-                              : "border-gray-200 hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: hex }}
-                        />
-                      )
-                    }
-
-                    return (
-                      <button
-                        key={nombreColor}
-                        type="button"
-                        onClick={() => setColor(nombreColor)}
-                        disabled={agotado}
-                        className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${
-                          seleccionado
-                            ? "border-[#F97316] bg-orange-50 text-[#F97316]"
-                            : "border-gray-200 text-gray-700 hover:bg-gray-50"
-                        }`}
-                      >
-                        {nombreColor}
-                      </button>
-                    )
-                  })}
-                </div>
-                {color && (
-                  <p className="mt-2 text-sm text-gray-500">{color}</p>
-                )}
-              </>
-            ) : (
-              <p className="text-sm text-gray-500">Sin colores disponibles</p>
+            <ColorSelector
+              colores={coloresDisponibles}
+              imagenesPorColor={imagenesPorColor}
+              colorSeleccionado={color}
+              onSeleccionar={manejarSeleccionColor}
+              deshabilitado={agotado}
+            />
+            {avisoReferencia && (
+              <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                {MENSAJE_IMAGEN_REFERENCIA}
+              </p>
             )}
           </div>
 

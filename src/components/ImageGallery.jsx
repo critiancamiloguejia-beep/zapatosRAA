@@ -18,11 +18,19 @@ function normalizarLista(imagenes) {
 // Galería con imagen principal, miniaturas y flechas anterior/siguiente
 export default function ImageGallery({
   imagenes = [],
+  imagenDestacada = null,
   emoji,
   nombre,
   className = "",
 }) {
-  const lista = useMemo(() => normalizarLista(imagenes), [imagenes])
+  const lista = useMemo(() => {
+    const base = normalizarLista(imagenes)
+    if (!imagenDestacada || !esUrlImagenValida(imagenDestacada)) return base
+    return [
+      imagenDestacada,
+      ...base.filter((url) => url !== imagenDestacada),
+    ]
+  }, [imagenes, imagenDestacada])
   const [indice, setIndice] = useState(0)
   const [fallidas, setFallidas] = useState(() => new Set())
 
