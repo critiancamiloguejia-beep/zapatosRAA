@@ -68,18 +68,18 @@ export default function LandingProducto() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900 antialiased">
-      {/* Logo de marca — ancho completo, altura compacta, sin deformar */}
-      <header className="relative border-b border-gray-900/10 bg-gray-950">
+      {/* Logo de marca — ancho completo, proporción natural (sin cuadrito centrado) */}
+      <header className="relative w-full bg-neutral-950">
         <Link
           to="/"
-          className="block w-full"
+          className="block w-full leading-[0]"
           aria-label={`${MARCA.nombre} — Ir al inicio`}
         >
           <ImagenMarca
             src={IMAGENES_LANDING.logo}
             fallback={IMAGENES_LANDING.logoFallback}
             alt={MARCA.nombre}
-            className="h-20 w-full object-contain object-center sm:h-24 md:h-28"
+            className="block w-full h-auto"
             loading="eager"
           />
         </Link>
