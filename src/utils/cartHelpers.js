@@ -11,8 +11,8 @@ export function textoColor(item) {
 }
 
 export function lineaProductoPedido(item, formatearPrecio) {
-  const talla = textoTalla(item) ?? "Talla N/A"
-  const color = textoColor(item) ?? "Color N/A"
+  const talla = item.talla != null ? item.talla : "N/A"
+  const color = item.color || "N/A"
   const subtotal = formatearPrecio(item.precio * item.cantidad)
-  return `${item.nombre} - ${talla} - ${color} - ${item.cantidad} unidades - ${subtotal}`
+  return `${item.nombre} - Talla ${talla} - Color ${color} - ${item.cantidad} unidades - ${subtotal}`
 }

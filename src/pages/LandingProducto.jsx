@@ -3,15 +3,23 @@ import { Link, useParams, useSearchParams } from "react-router-dom"
 import { obtenerProductoPorId } from "../services/productService"
 import { construirGaleria } from "../services/productMapper"
 import { formatearPrecio } from "../utils/formatters"
-import { mensajePedidoProducto } from "../utils/whatsapp"
+import { abrirWhatsApp, mensajePedidoProducto } from "../utils/whatsapp"
 import { MARCA, IMAGENES_LANDING } from "../utils/brand"
 import ImagenMarca from "../components/ImagenMarca"
 import ImageGallery from "../components/ImageGallery"
 import ColorSelector from "../components/ColorSelector"
 import BotonWhatsAppFlotante from "../components/BotonWhatsAppFlotante"
 import ModalPedidoLanding from "../components/ModalPedidoLanding"
+import {
+  LandingBadgesConfianza,
+  LandingPruebaSocial,
+  LandingGarantias,
+  LandingFAQ,
+  LandingFooter,
+  IconoWhatsApp,
+} from "../components/landing/LandingSecciones"
 
-// Landing page independiente para un producto (campañas / ofertas)
+// Landing de conversión para tráfico de Facebook / Instagram
 export default function LandingProducto() {
   const { id: idRuta } = useParams()
   const [searchParams] = useSearchParams()
@@ -60,51 +68,58 @@ export default function LandingProducto() {
 
   const tallasDisponibles = producto?.tallas ?? []
   const coloresDisponibles = producto?.colores ?? []
+  const galeria = producto ? construirGaleria(producto) : []
+  const imagenPrincipal = galeria[0] || producto?.imagen
+
   const subtitulo = producto
     ? [producto.marca, producto.categoria, producto.genero]
         .filter(Boolean)
         .join(" · ")
     : ""
 
+  const pedirWhatsApp = () => {
+    if (mensajeWhatsApp) abrirWhatsApp(mensajeWhatsApp)
+  }
+
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900 antialiased">
-      {/* Banner de marca 4:1 — ancho completo, altura proporcional */}
-      <header className="relative w-full bg-neutral-950">
+    <div className="min-h-screen bg-[#F9FAFB] font-sans text-gray-900 antialiased">
+      {/* Encabezado compacto */}
+      <header className="relative h-11 overflow-hidden bg-neutral-950 sm:h-12">
         <Link
           to="/"
-          className="block w-full leading-[0]"
+          className="block h-full w-full"
           aria-label={`${MARCA.nombre} — Ir al inicio`}
         >
           <ImagenMarca
             src="https://eogphstlsslxbpkxrjhk.supabase.co/storage/v1/object/public/productos/banner-nuevo.jpg"
             fallback={IMAGENES_LANDING.logoFallback}
             alt={MARCA.nombre}
-            className="block h-auto w-full object-contain object-center"
+            className="h-full w-full object-cover object-center"
             loading="eager"
           />
         </Link>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 sm:right-4">
+        <div className="absolute right-2 top-1/2 -translate-y-1/2">
           <Link
             to="/productos"
-            className="rounded-lg bg-black/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition hover:bg-black/80 sm:text-sm"
+            className="rounded-md bg-black/50 px-2 py-1 text-[10px] font-medium text-white backdrop-blur-sm sm:text-xs"
           >
-            Ver catálogo
+            Catálogo
           </Link>
         </div>
       </header>
 
       {cargando && (
-        <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex min-h-[50vh] items-center justify-center">
           <p className="text-sm font-medium text-gray-500">Cargando oferta...</p>
         </div>
       )}
 
       {!cargando && error && (
-        <div className="mx-auto max-w-2xl px-4 py-24 text-center">
-          <p className="mb-6 text-lg text-red-600">{error}</p>
+        <div className="mx-auto max-w-lg px-4 py-16 text-center">
+          <p className="mb-4 text-base text-red-600">{error}</p>
           <Link
             to="/"
-            className="inline-block rounded-xl bg-[#F97316] px-6 py-3 text-sm font-semibold text-white hover:bg-orange-600"
+            className="inline-block rounded-xl bg-[#F97316] px-6 py-3 text-sm font-semibold text-white"
           >
             Volver al inicio
           </Link>
@@ -113,136 +128,164 @@ export default function LandingProducto() {
 
       {!cargando && producto && (
         <>
-          <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-black shadow-lg sm:p-8">
-              <h1 className="text-2xl font-extrabold text-black sm:text-3xl md:text-4xl">
-                {producto.nombre}
-              </h1>
-              {subtitulo && (
-                <p className="mt-2 text-sm font-medium text-gray-600">
-                  {subtitulo}
-                </p>
-              )}
-              <p className="mt-3 text-3xl font-bold text-black">
-                {formatearPrecio(producto.precio)}
-              </p>
-
-              <div className="mt-8">
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                  Tallas
-                </h2>
-                {tallasDisponibles.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {tallasDisponibles.map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setTalla(t)}
-                        className={`flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-medium transition ${
-                          talla === t
-                            ? "border-black bg-black text-white"
-                            : "border-gray-300 text-black hover:border-gray-400"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">Sin tallas disponibles</p>
-                )}
-              </div>
-
-              <div className="mt-6">
-                <ColorSelector
-                  colores={coloresDisponibles}
-                  colorSeleccionado={color}
-                  onSeleccionar={setColor}
-                  label="Color:"
-                  id="color-landing"
+          <main className="mx-auto max-w-lg px-4 pb-4 pt-3">
+            {/* Hero: foto visible sin scroll excesivo */}
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              {imagenPrincipal ? (
+                <img
+                  src={imagenPrincipal}
+                  alt={producto.nombre}
+                  className="mx-auto max-h-44 w-full object-contain sm:max-h-48"
+                  loading="eager"
                 />
-              </div>
-
-              <div className="mt-6">
-                <label
-                  htmlFor="cantidad-landing"
-                  className="mb-2 block text-sm font-medium text-gray-700"
-                >
-                  Cantidad
-                </label>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setCantidad((c) => Math.max(1, c - 1))}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-300 text-lg font-medium hover:bg-gray-50"
-                    aria-label="Disminuir cantidad"
-                  >
-                    −
-                  </button>
-                  <span
-                    id="cantidad-landing"
-                    className="min-w-[2rem] text-center text-lg font-semibold"
-                  >
-                    {cantidad}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setCantidad((c) => c + 1)}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-300 text-lg font-medium hover:bg-gray-50"
-                    aria-label="Aumentar cantidad"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {construirGaleria(producto).length > 0 && (
-                <div className="mt-8 border-t border-gray-100 pt-8">
-                  <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Galería
-                  </h2>
-                  <ImageGallery
-                    imagenes={construirGaleria(producto)}
-                    emoji={producto.emoji}
-                    nombre={producto.nombre}
-                  />
+              ) : (
+                <div className="flex h-36 items-center justify-center bg-gray-50 text-6xl">
+                  {producto.emoji}
                 </div>
               )}
 
-              <div className="mt-8 flex flex-col gap-3 border-t border-gray-100 pt-8 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={() => setModalPedidoAbierto(true)}
-                  className="inline-flex flex-1 items-center justify-center rounded-xl bg-[#F97316] px-6 py-3.5 text-base font-bold text-white shadow-md transition hover:bg-orange-600"
-                >
-                  Realizar pedido
-                </button>
-                <Link
-                  to={`/productos/${producto.id}`}
-                  className="inline-flex flex-1 items-center justify-center rounded-xl border-2 border-black px-6 py-3.5 text-base font-semibold text-black transition hover:bg-gray-50"
-                >
-                  Ver en la tienda
-                </Link>
+              <div className="border-t border-gray-100 p-4">
+                <h1 className="text-xl font-extrabold leading-tight text-gray-900 sm:text-2xl">
+                  {producto.nombre}
+                </h1>
+                {subtitulo && (
+                  <p className="mt-1 text-xs font-medium text-gray-500">
+                    {subtitulo}
+                  </p>
+                )}
+
+                <p className="mt-2 text-2xl font-bold text-gray-900">
+                  {formatearPrecio(producto.precio)}
+                </p>
+
+                <LandingBadgesConfianza />
+
+                {/* Selectores compactos */}
+                <div className="mt-4 space-y-3">
+                  <div>
+                    <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Talla
+                    </p>
+                    {tallasDisponibles.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {tallasDisponibles.map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => setTalla(t)}
+                            className={`flex h-9 min-w-9 items-center justify-center rounded-lg border px-2.5 text-sm font-medium transition ${
+                              talla === t
+                                ? "border-gray-900 bg-gray-900 text-white"
+                                : "border-gray-200 bg-white text-gray-800 hover:border-gray-400"
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500">Sin tallas</p>
+                    )}
+                  </div>
+
+                  <ColorSelector
+                    colores={coloresDisponibles}
+                    colorSeleccionado={color}
+                    onSeleccionar={setColor}
+                    label="Color:"
+                    id="color-landing"
+                  />
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Cantidad
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCantidad((c) => Math.max(1, c - 1))}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-base font-medium"
+                        aria-label="Disminuir"
+                      >
+                        −
+                      </button>
+                      <span className="min-w-[1.5rem] text-center font-semibold">
+                        {cantidad}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setCantidad((c) => c + 1)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-base font-medium"
+                        aria-label="Aumentar"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTAs — WhatsApp protagonista */}
+                <div className="mt-4 space-y-2">
+                  <button
+                    type="button"
+                    onClick={pedirWhatsApp}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-green-200/60 transition hover:bg-[#20bd5a] active:scale-[0.99]"
+                  >
+                    <IconoWhatsApp className="h-6 w-6" />
+                    Pedir por WhatsApp
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setModalPedidoAbierto(true)}
+                    className="w-full rounded-xl border-2 border-gray-900 bg-white px-4 py-3 text-sm font-bold text-gray-900 transition hover:bg-gray-50"
+                  >
+                    Realizar pedido
+                  </button>
+                </div>
               </div>
             </div>
 
+            <LandingPruebaSocial />
+            <LandingGarantias />
+
+            {/* Galería adicional */}
+            {galeria.length > 0 && (
+              <section className="mt-6">
+                <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-gray-500">
+                  Fotos del producto
+                </h2>
+                <ImageGallery
+                  imagenes={galeria}
+                  emoji={producto.emoji}
+                  nombre={producto.nombre}
+                />
+              </section>
+            )}
+
             {producto.descripcion && (
-              <section className="mt-8 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
-                <h2 className="mb-3 text-lg font-bold text-black">Descripción</h2>
-                <p className="text-base leading-relaxed text-gray-700">
+              <section className="mt-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <h2 className="mb-2 text-sm font-bold text-gray-900">
+                  Descripción
+                </h2>
+                <p className="text-sm leading-relaxed text-gray-600">
                   {producto.descripcion}
                 </p>
               </section>
             )}
-          </div>
 
-          <footer className="border-t border-gray-100 py-6 pb-24 text-center text-sm text-gray-500">
-            <Link to="/" className="font-medium text-black hover:underline">
-              {MARCA.nombre}
-            </Link>
-            <span className="mx-2">·</span>
-            <span>{MARCA.eslogan}</span>
-          </footer>
+            <LandingFAQ />
+
+            <p className="mt-6 text-center">
+              <Link
+                to={`/productos/${producto.id}`}
+                className="text-xs font-medium text-gray-500 underline-offset-2 hover:text-gray-900 hover:underline"
+              >
+                Ver ficha completa en la tienda
+              </Link>
+            </p>
+          </main>
+
+          <LandingFooter />
 
           <BotonWhatsAppFlotante mensaje={mensajeWhatsApp} />
 

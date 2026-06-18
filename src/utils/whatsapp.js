@@ -23,19 +23,19 @@ export function mensajeConfirmacionPedido({ formulario, items, total }) {
     .map((item) => lineaProductoPedido(item, formatearPrecio))
     .join("\n\n")
 
-  return `¡Hola! Quiero hacer un pedido desde Zapatos RAA 🛍️
+  return `📍 Datos de envío:
 
-📍 Datos de envío:
 Nombre: ${formulario.nombreCompleto}
+
 Teléfono: ${formulario.telefono}
+
 Dirección: ${formulario.direccion}
+
 Ciudad: ${formulario.ciudad}
 
 📦 Productos:
 
 ${productos}
 
-💰 Total: ${formatearPrecio(total)}
-
-¡Gracias! 🙌`
+💰 Total: ${formatearPrecio(total)}`
 }
