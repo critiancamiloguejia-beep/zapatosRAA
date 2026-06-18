@@ -79,7 +79,7 @@ export default function LandingProducto() {
             src={IMAGENES_LANDING.logo}
             fallback={IMAGENES_LANDING.logoFallback}
             alt={MARCA.nombre}
-            className="h-14 w-full object-cover object-center sm:h-16"
+            className="h-20 w-full object-contain object-center sm:h-24 md:h-28"
             loading="eager"
           />
         </Link>
@@ -113,20 +113,6 @@ export default function LandingProducto() {
 
       {!cargando && producto && (
         <>
-          {/* Banner de marca — fallback: imagen principal del producto */}
-          <section className="w-full bg-gray-950">
-            <ImagenMarca
-              src="https://eogphstlsslxbpkxrjhk.supabase.co/storage/v1/object/public/productos/logo-marca.jpg"
-              fallback={
-                producto.imagen ||
-                construirGaleria(producto)[0] ||
-                IMAGENES_LANDING.logoFallback
-              }
-              alt={`${MARCA.nombre} — banner`}
-              className="h-28 w-full object-contain object-center sm:h-32 md:h-36"
-            />
-          </section>
-
           <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-black shadow-lg sm:p-8">
               <h1 className="text-2xl font-extrabold text-black sm:text-3xl md:text-4xl">
