@@ -1,13 +1,12 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ChevronDown, Star, ShieldCheck, Truck, Wallet, MessageCircle } from "lucide-react"
+import { ChevronDown, ShieldCheck, Truck, Wallet, MessageCircle } from "lucide-react"
 import { MARCA } from "../../utils/brand"
 
 const BADGES_CONFIANZA = [
   { icono: "🛡️", texto: "Compra segura" },
   { icono: "📦", texto: "Pago contraentrega" },
   { icono: "🚚", texto: "Envío gratis a toda Colombia" },
-  { icono: "⭐", texto: "Más de 5.000 pedidos entregados" },
 ]
 
 const GARANTIAS = [
@@ -70,36 +69,6 @@ export function LandingBadgesConfianza() {
         </div>
       ))}
     </div>
-  )
-}
-
-export function LandingPruebaSocial() {
-  const stats = [
-    { valor: "5.000+", label: "Pares entregados", icon: Truck },
-    { valor: "4.9/5", label: "Calificación", icon: Star },
-    { valor: "98%", label: "Clientes satisfechos", icon: ShieldCheck },
-  ]
-
-  return (
-    <section className="mt-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h2 className="mb-3 text-center text-sm font-bold uppercase tracking-wide text-gray-500">
-        Tienda verificada en Colombia
-      </h2>
-      <div className="grid grid-cols-3 divide-x divide-gray-100">
-        {stats.map(({ valor, label, icon: Icon }) => (
-          <div key={label} className="flex flex-col items-center px-2 text-center">
-            <Icon className="mb-1 h-5 w-5 text-[#F97316]" aria-hidden="true" />
-            <p className="text-lg font-bold text-gray-900">{valor}</p>
-            <p className="text-[10px] leading-tight text-gray-500 sm:text-xs">
-              {label}
-            </p>
-          </div>
-        ))}
-      </div>
-      <p className="mt-3 text-center text-xs text-gray-500">
-        Llevamos años entregando calzado deportivo en todo el país.
-      </p>
-    </section>
   )
 }
 

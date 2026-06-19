@@ -12,7 +12,6 @@ import BotonWhatsAppFlotante from "../components/BotonWhatsAppFlotante"
 import ModalPedidoLanding from "../components/ModalPedidoLanding"
 import {
   LandingBadgesConfianza,
-  LandingPruebaSocial,
   LandingGarantias,
   LandingFAQ,
   LandingFooter,
@@ -132,14 +131,16 @@ export default function LandingProducto() {
             {/* Hero: foto visible sin scroll excesivo */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
               {imagenPrincipal ? (
-                <img
-                  src={imagenPrincipal}
-                  alt={producto.nombre}
-                  className="mx-auto max-h-44 w-full object-contain sm:max-h-48"
-                  loading="eager"
-                />
+                <div className="flex min-h-[400px] items-center justify-center bg-gray-50 px-4 py-4 sm:min-h-[500px]">
+                  <img
+                    src={imagenPrincipal}
+                    alt={producto.nombre}
+                    className="h-[400px] w-[70%] max-w-full object-contain sm:h-[500px]"
+                    loading="eager"
+                  />
+                </div>
               ) : (
-                <div className="flex h-36 items-center justify-center bg-gray-50 text-6xl">
+                <div className="flex h-[400px] items-center justify-center bg-gray-50 text-6xl sm:h-[500px]">
                   {producto.emoji}
                 </div>
               )}
@@ -245,7 +246,6 @@ export default function LandingProducto() {
               </div>
             </div>
 
-            <LandingPruebaSocial />
             <LandingGarantias />
 
             {/* Galería adicional */}
